@@ -1,0 +1,10 @@
+name: Nexus-Core
+version: '1.0.0'
+main: de.mecrytv.nexusCore.NexusCore
+api-version: '1.21'
+depend: [LuckPerms]
+commands:
+  report:
+    description: Report a player for misconduct
+  reports:
+    description: View all reports
