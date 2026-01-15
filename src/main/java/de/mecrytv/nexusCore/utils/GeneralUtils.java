@@ -3,13 +3,11 @@ package de.mecrytv.nexusCore.utils;
 import de.mecrytv.DatabaseAPI;
 import de.mecrytv.nexusCore.NexusCore;
 import de.mecrytv.nexusCore.models.ReportModel;
-import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.security.SecureRandom;
-import java.util.List;
 
 public class GeneralUtils {
 
@@ -57,7 +55,6 @@ public class GeneralUtils {
 
                         final String finalLang = langCode;
 
-
                         String rawMessage = NexusCore.getInstance().getLanguageAPI()
                                 .getTranslation(finalLang, "messages.staff_report_actionbar");
 
@@ -75,14 +72,5 @@ public class GeneralUtils {
             ex.printStackTrace();
             return null;
         });
-    }
-
-    public static Component cleanComponent(Component comp) {
-        String serialized = MiniMessage.miniMessage().serialize(comp);
-        if (serialized.contains("Dynamic")) {
-            serialized = serialized.replace("Dynamic", "").replace("\n", "");
-            return MiniMessage.miniMessage().deserialize(serialized);
-        }
-        return comp;
     }
 }

@@ -85,12 +85,12 @@ public class ReportInv {
     private GuiItem createReportItem(Material material, String reasonKey, String langCode, Player target, Gui gui) {
         String baseKey = "gui.report.reasons." + reasonKey;
 
-        Component name = TranslationUtils.sendGUITranslation(langCode, baseKey + ".name");
+        Component reasonName = TranslationUtils.sendGUITranslation(langCode, baseKey + ".name");
         List<Component> loreLines = getTranslatedLore(langCode, baseKey + ".lore");
 
         ItemStack item = new ItemStack(material);
         item.editMeta(meta -> {
-            meta.displayName(name);
+            meta.displayName(reasonName);
             meta.lore(loreLines);
             meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
         });
@@ -114,10 +114,11 @@ public class ReportInv {
 
             DatabaseAPI.set("reports", report);
 
-            String translatedReasonName = MiniMessage.miniMessage().serialize(name);
+            String reasonStr = MiniMessage.miniMessage().serialize(reasonName);
+
             TranslationUtils.sendTranslation(clicker, langCode, "messages.report_success",
                     "{target}", target.getName(),
-                    "{reason}", translatedReasonName
+                    "{reason}", reasonStr
             );
 
             ReportCommand.setCooldown(clicker.getUniqueId(), target.getUniqueId());
@@ -133,6 +134,7 @@ public class ReportInv {
         if ((message == null || message.isEmpty()) && !langCode.equals("en_US")) {
             message = plugin.getLanguageAPI().getTranslation("en_US", configKey);
         }
+
         if (message == null) message = configKey;
 
         List<Component> loreComponents = new ArrayList<>();
@@ -140,7 +142,9 @@ public class ReportInv {
 
         String[] lines = message.split("\n");
         for (String line : lines) {
-            loreComponents.add(mm.deserialize(line));
+            if (!line.isEmpty()) {
+                loreComponents.add(mm.deserialize(line));
+            }
         }
 
         return loreComponents;

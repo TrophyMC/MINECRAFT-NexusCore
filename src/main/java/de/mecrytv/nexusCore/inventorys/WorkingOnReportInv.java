@@ -82,7 +82,6 @@ public class WorkingOnReportInv {
         String reporterName = (report.getReporterName() != null) ? report.getReporterName() : "Unknown";
 
         Component reasonComp = TranslationUtils.sendGUITranslation(langCode, "gui.report.reasons." + report.getReason() + ".name");
-        String reasonStr = MiniMessage.miniMessage().serialize(reasonComp);
 
         SimpleDateFormat dateFmt = new SimpleDateFormat("dd.MM.yyyy");
         SimpleDateFormat timeFmt = new SimpleDateFormat("HH:mm:ss");
@@ -99,9 +98,11 @@ public class WorkingOnReportInv {
 
             List<Component> lore = new ArrayList<>();
 
-            lore.add(GeneralUtils.cleanComponent(TranslationUtils.sendGUITranslation(langCode, "gui.reports.heads.target", "{target}", targetName)));
-            lore.add(GeneralUtils.cleanComponent(TranslationUtils.sendGUITranslation(langCode, "gui.reports.heads.reporter", "{reporter}", reporterName)));
-            lore.add(GeneralUtils.cleanComponent(TranslationUtils.sendGUITranslation(langCode, "gui.reports.heads.reason", "{reason}", reasonStr)));
+            lore.add(TranslationUtils.sendGUITranslation(langCode, "gui.reports.heads.target", "{target}", targetName));
+            lore.add(TranslationUtils.sendGUITranslation(langCode, "gui.reports.heads.reporter", "{reporter}", reporterName));
+
+            lore.add(TranslationUtils.sendGUITranslation(langCode, "gui.reports.heads.reason")
+                    .replaceText(builder -> builder.matchLiteral("{reason}").replacement(reasonComp)));
 
             lore.add(TranslationUtils.sendGUITranslation(langCode, "gui.reports.heads.time",
                     "{date}", dateFmt.format(dateObj),
