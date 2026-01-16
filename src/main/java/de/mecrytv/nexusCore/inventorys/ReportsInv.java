@@ -17,6 +17,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
@@ -90,7 +91,10 @@ public class ReportsInv {
     private void setupStaticItems(ScrollingGui gui, String langCode) {
         ItemStack workingItem = new ItemStack(Material.CHEST);
         workingItem.editMeta(meta -> meta.displayName(TranslationUtils.sendGUITranslation(langCode, "gui.reports.working")));
-        gui.setItem(1, 5, ItemBuilder.from(workingItem).asGuiItem());
+        gui.setItem(1, 5, ItemBuilder.from(workingItem).asGuiItem( event -> {
+            Player clicker = (Player) event.getWhoClicked();
+            new WorkingOnReportInv().open(clicker);
+        }));
 
         ItemStack closedItem = new ItemStack(Material.BARRIER);
         closedItem.editMeta(meta -> meta.displayName(TranslationUtils.sendGUITranslation(langCode, "gui.reports.close")));
@@ -110,8 +114,7 @@ public class ReportsInv {
     }
 
     private GuiItem createReportHead(ReportModel report, String langCode, int reportNumber) {
-        OfflinePlayer target = Bukkit.getOfflinePlayer(UUID.fromString(report.getTargetUUID()));
-
+        UUID targetUUID = UUID.fromString(report.getTargetUUID());
         String targetName = (report.getTargetName() != null) ? report.getTargetName() : "Unknown";
         String reporterName = (report.getReporterName() != null) ? report.getReporterName() : "Unknown";
 
@@ -123,7 +126,10 @@ public class ReportsInv {
 
         ItemStack head = new ItemStack(Material.PLAYER_HEAD);
         head.editMeta(SkullMeta.class, meta -> {
-            meta.setOwningPlayer(target);
+            com.destroystokyo.paper.profile.PlayerProfile profile = Bukkit.createProfile(targetUUID, targetName);
+            meta.setPlayerProfile(profile);
+
+            meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
 
             meta.displayName(TranslationUtils.sendGUITranslation(langCode, "gui.reports.heads.title",
                     "{number}", String.valueOf(reportNumber),
@@ -131,7 +137,6 @@ public class ReportsInv {
             ));
 
             List<Component> lore = new ArrayList<>();
-
             lore.add(TranslationUtils.sendGUITranslation(langCode, "gui.reports.heads.target", "{target}", targetName));
             lore.add(TranslationUtils.sendGUITranslation(langCode, "gui.reports.heads.reporter", "{reporter}", reporterName));
 
@@ -149,9 +154,25 @@ public class ReportsInv {
             meta.lore(lore);
         });
 
+        Bukkit.getScheduler().runTaskAsynchronously(NexusCore.getInstance(), () -> {
+            SkullMeta meta = (SkullMeta) head.getItemMeta();
+            com.destroystokyo.paper.profile.PlayerProfile profile = meta.getPlayerProfile();
+
+            if (profile != null && (!profile.isComplete() || profile.getProperties().isEmpty())) {
+                profile.complete();
+
+                Bukkit.getScheduler().runTask(NexusCore.getInstance(), () -> {
+                    head.editMeta(SkullMeta.class, m -> m.setPlayerProfile(profile));
+                });
+            }
+        });
+
         return ItemBuilder.from(head).asGuiItem(event -> {
             Player clicker = (Player) event.getWhoClicked();
-            new ClaimReportInv().open(clicker, report.getReportID(), reportNumber);
+            SkullMeta meta = (SkullMeta) head.getItemMeta();
+            com.destroystokyo.paper.profile.PlayerProfile currentProfile = meta.getPlayerProfile();
+
+            new ClaimReportInv().open(clicker, report.getReportID(), reportNumber, currentProfile);
         });
     }
 }

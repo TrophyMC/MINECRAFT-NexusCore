@@ -1,10 +1,10 @@
 package de.mecrytv.nexusCore.inventorys;
 
+import com.destroystokyo.paper.profile.PlayerProfile;
 import com.google.gson.JsonObject;
 import de.mecrytv.DatabaseAPI;
 import de.mecrytv.nexusCore.NexusCore;
 import de.mecrytv.nexusCore.models.ReportModel;
-import de.mecrytv.nexusCore.utils.GeneralUtils;
 import de.mecrytv.nexusCore.utils.TranslationUtils;
 import dev.triumphteam.gui.builder.item.ItemBuilder;
 import dev.triumphteam.gui.guis.Gui;
@@ -14,17 +14,19 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class ClaimReportInv {
 
     private final HeadDatabaseAPI headDatabaseAPI = new HeadDatabaseAPI();
 
-    public void open(Player player, String caseID, int reportNum) {
+    public void open(Player player, String caseID, int reportNum, PlayerProfile targetProfile) {
         String playerUUID = player.getUniqueId().toString();
 
         DatabaseAPI.getInstance().getGenericAsync(
@@ -51,7 +53,13 @@ public class ClaimReportInv {
 
                     ItemStack playerReport = new ItemStack(Material.PLAYER_HEAD);
                     playerReport.editMeta(SkullMeta.class, meta -> {
-                        meta.setOwningPlayer(Bukkit.getOfflinePlayer(report.getTargetUUID()));
+                        if (targetProfile != null) {
+                            meta.setPlayerProfile(targetProfile);
+                        } else {
+                            meta.setOwningPlayer(Bukkit.getOfflinePlayer(UUID.fromString(report.getTargetUUID())));
+                        }
+
+                        meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
 
                         meta.displayName(TranslationUtils.sendGUITranslation(finalLang, "gui.claimReport.head.title",
                                 "{number}", String.valueOf(reportNum),
@@ -61,7 +69,6 @@ public class ClaimReportInv {
                         Component reasonDisplay = TranslationUtils.sendGUITranslation(finalLang, "gui.report.reasons." + report.getReason() + ".name");
 
                         List<Component> lore = new ArrayList<>();
-
                         lore.add(TranslationUtils.sendGUITranslation(finalLang, "gui.claimReport.head.target", "{target}", report.getTargetName()));
                         lore.add(TranslationUtils.sendGUITranslation(finalLang, "gui.claimReport.head.reporter", "{reporter}", report.getReporterName()));
 
@@ -77,6 +84,7 @@ public class ClaimReportInv {
                     acceptReport.editMeta(meta -> {
                         meta.displayName(TranslationUtils.sendGUITranslation(finalLang, "gui.claimReport.accept"));
                     });
+
                     GuiItem acceptItem = ItemBuilder.from(acceptReport).asGuiItem(event -> {
                         Player clicker = (Player) event.getWhoClicked();
 
@@ -103,6 +111,7 @@ public class ClaimReportInv {
                     denyReport.editMeta(meta -> {
                         meta.displayName(TranslationUtils.sendGUITranslation(finalLang, "gui.claimReport.deny"));
                     });
+
                     GuiItem denyItem = ItemBuilder.from(denyReport).asGuiItem(event -> {
                         gui.close(player);
                         new ReportsInv().open(player);
@@ -111,6 +120,8 @@ public class ClaimReportInv {
                     gui.setItem(2, 3, denyItem);
                     gui.setItem(2, 5, ItemBuilder.from(playerReport).asGuiItem());
                     gui.setItem(2, 7, acceptItem);
+
+                    gui.open(player);
                 });
             }).exceptionally(ex -> {
                 TranslationUtils.sendTranslation(player, finalLang, "gui.reports.errors.loading_report");

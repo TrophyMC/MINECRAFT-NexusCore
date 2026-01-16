@@ -41,6 +41,10 @@ public class TranslationUtils {
         }
         if (message == null) message = configKey;
 
+        message = message.replaceFirst("(?i)(?:<[^>]*>)*Dynamic\\s*", "");
+
+        message = message.trim();
+
         Component component = MiniMessage.miniMessage().deserialize(message);
 
         if (replacements != null && replacements.length > 1) {

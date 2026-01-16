@@ -2,6 +2,7 @@ package de.mecrytv.nexusCore.commands;
 
 import de.mecrytv.DatabaseAPI;
 import de.mecrytv.nexusCore.NexusCore;
+import de.mecrytv.nexusCore.inventorys.ReportInv;
 import de.mecrytv.nexusCore.inventorys.ReportsInv;
 import de.mecrytv.nexusCore.utils.TranslationUtils;
 import org.bukkit.Bukkit;
@@ -113,7 +114,7 @@ public class ReportCommand implements CommandExecutor {
                     }
                 }
 
-                new ReportsInv().open(player);
+                new ReportInv().open(player, target);
             });
         }).exceptionally(ex -> {
             player.sendMessage("Bitte versuche es später erneut.");
