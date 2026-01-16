@@ -116,63 +116,29 @@ public class ReportsInv {
     private GuiItem createReportHead(ReportModel report, String langCode, int reportNumber) {
         UUID targetUUID = UUID.fromString(report.getTargetUUID());
         String targetName = (report.getTargetName() != null) ? report.getTargetName() : "Unknown";
-        String reporterName = (report.getReporterName() != null) ? report.getReporterName() : "Unknown";
-
-        Component reasonComp = TranslationUtils.sendGUITranslation(langCode, "gui.report.reasons." + report.getReason() + ".name");
-
-        SimpleDateFormat dateFmt = new SimpleDateFormat("dd.MM.yyyy");
-        SimpleDateFormat timeFmt = new SimpleDateFormat("HH:mm:ss");
-        Date dateObj = new Date(report.getReportTime());
 
         ItemStack head = new ItemStack(Material.PLAYER_HEAD);
         head.editMeta(SkullMeta.class, meta -> {
-            com.destroystokyo.paper.profile.PlayerProfile profile = Bukkit.createProfile(targetUUID, targetName);
-            meta.setPlayerProfile(profile);
-
             meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
-
-            meta.displayName(TranslationUtils.sendGUITranslation(langCode, "gui.reports.heads.title",
-                    "{number}", String.valueOf(reportNumber),
-                    "{caseID}", report.getReportID()
-            ));
+            meta.displayName(TranslationUtils.sendGUITranslation(langCode, "gui.reports.heads.title", "{number}", String.valueOf(reportNumber), "{caseID}", report.getReportID()));
 
             List<Component> lore = new ArrayList<>();
             lore.add(TranslationUtils.sendGUITranslation(langCode, "gui.reports.heads.target", "{target}", targetName));
-            lore.add(TranslationUtils.sendGUITranslation(langCode, "gui.reports.heads.reporter", "{reporter}", reporterName));
-
-            lore.add(TranslationUtils.sendGUITranslation(langCode, "gui.reports.heads.reason")
-                    .replaceText(b -> b.matchLiteral("{reason}").replacement(reasonComp)));
-
-            lore.add(TranslationUtils.sendGUITranslation(langCode, "gui.reports.heads.time",
-                    "{date}", dateFmt.format(dateObj),
-                    "{time}", timeFmt.format(dateObj)
-            ));
-
-            lore.add(Component.empty());
-            lore.add(TranslationUtils.sendGUITranslation(langCode, "gui.reports.heads.state", "{state}", report.getState()));
-
+            lore.add(TranslationUtils.sendGUITranslation(langCode, "gui.reports.heads.reporter", "{reporter}", report.getReporterName()));
+            lore.add(TranslationUtils.sendGUITranslation(langCode, "gui.reports.heads.time", "{date}", new SimpleDateFormat("dd.MM.yyyy").format(new Date(report.getReportTime())), "{time}", new SimpleDateFormat("HH:mm:ss").format(new Date(report.getReportTime()))));
             meta.lore(lore);
         });
 
-        Bukkit.getScheduler().runTaskAsynchronously(NexusCore.getInstance(), () -> {
-            SkullMeta meta = (SkullMeta) head.getItemMeta();
-            com.destroystokyo.paper.profile.PlayerProfile profile = meta.getPlayerProfile();
-
-            if (profile != null && (!profile.isComplete() || profile.getProperties().isEmpty())) {
-                profile.complete();
-
-                Bukkit.getScheduler().runTask(NexusCore.getInstance(), () -> {
-                    head.editMeta(SkullMeta.class, m -> m.setPlayerProfile(profile));
-                });
-            }
+        NexusCore.getInstance().getSkinCacheManager().getProfile(targetUUID, targetName).thenAccept(profile -> {
+            Bukkit.getScheduler().runTask(NexusCore.getInstance(), () -> {
+                head.editMeta(SkullMeta.class, meta -> meta.setPlayerProfile(profile));
+            });
         });
 
         return ItemBuilder.from(head).asGuiItem(event -> {
             Player clicker = (Player) event.getWhoClicked();
             SkullMeta meta = (SkullMeta) head.getItemMeta();
-            com.destroystokyo.paper.profile.PlayerProfile currentProfile = meta.getPlayerProfile();
-
-            new ClaimReportInv().open(clicker, report.getReportID(), reportNumber, currentProfile);
+            new ClaimReportInv().open(clicker, report.getReportID(), reportNumber, meta.getPlayerProfile());
         });
     }
 }

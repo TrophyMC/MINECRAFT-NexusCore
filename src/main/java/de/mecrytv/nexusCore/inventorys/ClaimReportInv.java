@@ -41,87 +41,90 @@ public class ClaimReportInv {
             final String finalLang = langCode;
 
             DatabaseAPI.<ReportModel>get("reports", caseID).thenAccept(report -> {
-                Bukkit.getScheduler().runTask(NexusCore.getInstance(), () -> {
+                UUID targetUUID = UUID.fromString(report.getTargetUUID());
 
-                    Component title = TranslationUtils.sendGUITranslation(finalLang, "gui.claimReport.title");
+                NexusCore.getInstance().getSkinCacheManager().getProfile(targetUUID, report.getTargetName()).thenAccept(cachedProfile -> {
+                    Bukkit.getScheduler().runTask(NexusCore.getInstance(), () -> {
 
-                    Gui gui = Gui.gui()
-                            .title(title)
-                            .rows(3)
-                            .disableAllInteractions()
-                            .create();
+                        Component title = TranslationUtils.sendGUITranslation(finalLang, "gui.claimReport.title");
 
-                    ItemStack playerReport = new ItemStack(Material.PLAYER_HEAD);
-                    playerReport.editMeta(SkullMeta.class, meta -> {
-                        if (targetProfile != null) {
-                            meta.setPlayerProfile(targetProfile);
-                        } else {
-                            meta.setOwningPlayer(Bukkit.getOfflinePlayer(UUID.fromString(report.getTargetUUID())));
-                        }
+                        Gui gui = Gui.gui()
+                                .title(title)
+                                .rows(3)
+                                .disableAllInteractions()
+                                .create();
 
-                        meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
+                        ItemStack playerReport = new ItemStack(Material.PLAYER_HEAD);
+                        playerReport.editMeta(SkullMeta.class, meta -> {
+                            if (targetProfile != null) {
+                                meta.setPlayerProfile(targetProfile);
+                            } else {
+                                meta.setPlayerProfile(cachedProfile);
+                            }
 
-                        meta.displayName(TranslationUtils.sendGUITranslation(finalLang, "gui.claimReport.head.title",
-                                "{number}", String.valueOf(reportNum),
-                                "{caseID}", report.getReportID()
-                        ));
+                            meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
 
-                        Component reasonDisplay = TranslationUtils.sendGUITranslation(finalLang, "gui.report.reasons." + report.getReason() + ".name");
+                            meta.displayName(TranslationUtils.sendGUITranslation(finalLang, "gui.claimReport.head.title",
+                                    "{number}", String.valueOf(reportNum),
+                                    "{caseID}", report.getReportID()
+                            ));
 
-                        List<Component> lore = new ArrayList<>();
-                        lore.add(TranslationUtils.sendGUITranslation(finalLang, "gui.claimReport.head.target", "{target}", report.getTargetName()));
-                        lore.add(TranslationUtils.sendGUITranslation(finalLang, "gui.claimReport.head.reporter", "{reporter}", report.getReporterName()));
+                            Component reasonDisplay = TranslationUtils.sendGUITranslation(finalLang, "gui.report.reasons." + report.getReason() + ".name");
 
-                        lore.add(TranslationUtils.sendGUITranslation(finalLang, "gui.claimReport.head.reason")
-                                .replaceText(builder -> builder.matchLiteral("{reason}").replacement(reasonDisplay)));
+                            List<Component> lore = new ArrayList<>();
+                            lore.add(TranslationUtils.sendGUITranslation(finalLang, "gui.claimReport.head.target", "{target}", report.getTargetName()));
+                            lore.add(TranslationUtils.sendGUITranslation(finalLang, "gui.claimReport.head.reporter", "{reporter}", report.getReporterName()));
+                            lore.add(TranslationUtils.sendGUITranslation(finalLang, "gui.claimReport.head.reason")
+                                    .replaceText(builder -> builder.matchLiteral("{reason}").replacement(reasonDisplay)));
 
-                        meta.lore(lore);
-                    });
-
-                    ItemStack acceptReport = headDatabaseAPI.getItemHead("10209");
-                    if (acceptReport == null) acceptReport = new ItemStack(Material.LIME_DYE);
-
-                    acceptReport.editMeta(meta -> {
-                        meta.displayName(TranslationUtils.sendGUITranslation(finalLang, "gui.claimReport.accept"));
-                    });
-
-                    GuiItem acceptItem = ItemBuilder.from(acceptReport).asGuiItem(event -> {
-                        Player clicker = (Player) event.getWhoClicked();
-
-                        JsonObject updates = new JsonObject();
-                        updates.addProperty("state", "WORKING_ON");
-                        updates.addProperty("staffUUID", clicker.getUniqueId().toString());
-                        updates.addProperty("staffName", clicker.getName());
-
-                        DatabaseAPI.updateAsync("reports", caseID, updates).thenRun(() -> {
-                            Bukkit.getScheduler().runTask(NexusCore.getInstance(), () -> {
-                                gui.close(clicker);
-                                new WorkingOnReportInv().open(clicker);
-                            });
-                        }).exceptionally(ex -> {
-                            TranslationUtils.sendTranslation(clicker, "en_US", "gui.reports.errors.claiming");
-                            ex.printStackTrace();
-                            return null;
+                            meta.lore(lore);
                         });
+
+                        ItemStack acceptReport = headDatabaseAPI.getItemHead("10209");
+                        if (acceptReport == null) acceptReport = new ItemStack(Material.LIME_DYE);
+
+                        acceptReport.editMeta(meta -> {
+                            meta.displayName(TranslationUtils.sendGUITranslation(finalLang, "gui.claimReport.accept"));
+                        });
+
+                        GuiItem acceptItem = ItemBuilder.from(acceptReport).asGuiItem(event -> {
+                            Player clicker = (Player) event.getWhoClicked();
+
+                            JsonObject updates = new JsonObject();
+                            updates.addProperty("state", "WORKING_ON");
+                            updates.addProperty("staffUUID", clicker.getUniqueId().toString());
+                            updates.addProperty("staffName", clicker.getName());
+
+                            DatabaseAPI.updateAsync("reports", caseID, updates).thenRun(() -> {
+                                Bukkit.getScheduler().runTask(NexusCore.getInstance(), () -> {
+                                    gui.close(clicker);
+                                    new WorkingOnReportInv().open(clicker);
+                                });
+                            }).exceptionally(ex -> {
+                                TranslationUtils.sendTranslation(clicker, "en_US", "gui.reports.errors.claiming");
+                                ex.printStackTrace();
+                                return null;
+                            });
+                        });
+
+                        ItemStack denyReport = headDatabaseAPI.getItemHead("9351");
+                        if (denyReport == null) denyReport = new ItemStack(Material.RED_DYE);
+
+                        denyReport.editMeta(meta -> {
+                            meta.displayName(TranslationUtils.sendGUITranslation(finalLang, "gui.claimReport.deny"));
+                        });
+
+                        GuiItem denyItem = ItemBuilder.from(denyReport).asGuiItem(event -> {
+                            gui.close(player);
+                            new ReportsInv().open(player);
+                        });
+
+                        gui.setItem(2, 3, denyItem);
+                        gui.setItem(2, 5, ItemBuilder.from(playerReport).asGuiItem());
+                        gui.setItem(2, 7, acceptItem);
+
+                        gui.open(player);
                     });
-
-                    ItemStack denyReport = headDatabaseAPI.getItemHead("9351");
-                    if (denyReport == null) denyReport = new ItemStack(Material.RED_DYE);
-
-                    denyReport.editMeta(meta -> {
-                        meta.displayName(TranslationUtils.sendGUITranslation(finalLang, "gui.claimReport.deny"));
-                    });
-
-                    GuiItem denyItem = ItemBuilder.from(denyReport).asGuiItem(event -> {
-                        gui.close(player);
-                        new ReportsInv().open(player);
-                    });
-
-                    gui.setItem(2, 3, denyItem);
-                    gui.setItem(2, 5, ItemBuilder.from(playerReport).asGuiItem());
-                    gui.setItem(2, 7, acceptItem);
-
-                    gui.open(player);
                 });
             }).exceptionally(ex -> {
                 TranslationUtils.sendTranslation(player, finalLang, "gui.reports.errors.loading_report");

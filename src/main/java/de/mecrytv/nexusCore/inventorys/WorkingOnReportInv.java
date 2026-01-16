@@ -75,10 +75,9 @@ public class WorkingOnReportInv {
     }
 
     private GuiItem createReportHead(ReportModel report, String langCode, int reportNumber){
-        OfflinePlayer targetPlayer = Bukkit.getOfflinePlayer(report.getTargetUUID());
-
         String targetName = (report.getTargetName() != null) ? report.getTargetName() : "Unknown";
         String reporterName = (report.getReporterName() != null) ? report.getReporterName() : "Unknown";
+        UUID targetUUID = UUID.fromString(report.getTargetUUID());
 
         Component reasonComp = TranslationUtils.sendGUITranslation(langCode, "gui.report.reasons." + report.getReason() + ".name");
 
@@ -88,8 +87,6 @@ public class WorkingOnReportInv {
 
         ItemStack head = new ItemStack(Material.PLAYER_HEAD);
         head.editMeta(SkullMeta.class, meta -> {
-            meta.setOwningPlayer(targetPlayer);
-
             meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP, ItemFlag.HIDE_ATTRIBUTES);
 
             meta.displayName(TranslationUtils.sendGUITranslation(langCode, "gui.reports.heads.title",
@@ -98,23 +95,25 @@ public class WorkingOnReportInv {
             ));
 
             List<Component> lore = new ArrayList<>();
-
             lore.add(TranslationUtils.sendGUITranslation(langCode, "gui.reports.heads.target", "{target}", targetName));
             lore.add(TranslationUtils.sendGUITranslation(langCode, "gui.reports.heads.reporter", "{reporter}", reporterName));
-
             lore.add(TranslationUtils.sendGUITranslation(langCode, "gui.reports.heads.reason")
                     .replaceText(builder -> builder.matchLiteral("{reason}").replacement(reasonComp)));
-
             lore.add(TranslationUtils.sendGUITranslation(langCode, "gui.reports.heads.time",
                     "{date}", dateFmt.format(dateObj),
                     "{time}", timeFmt.format(dateObj)
             ));
-
             lore.add(Component.empty());
             lore.add(TranslationUtils.sendGUITranslation(langCode, "gui.reports.heads.state", "{state}", report.getState()));
             lore.add(TranslationUtils.sendGUITranslation(langCode, "gui.reports.heads.staff", "{staff}", report.getStaffName()));
 
             meta.lore(lore);
+        });
+
+        NexusCore.getInstance().getSkinCacheManager().getProfile(targetUUID, targetName).thenAccept(profile -> {
+            Bukkit.getScheduler().runTask(NexusCore.getInstance(), () -> {
+                head.editMeta(SkullMeta.class, meta -> meta.setPlayerProfile(profile));
+            });
         });
 
         return ItemBuilder.from(head).asGuiItem(event -> {
@@ -148,7 +147,7 @@ public class WorkingOnReportInv {
                 return;
             }
 
-            // TODO 2: OPEN DETAILED REPORT INVENTORY HERE
+            // TODO: Open Detail Inventory
             clicker.closeInventory();
         });
     }
