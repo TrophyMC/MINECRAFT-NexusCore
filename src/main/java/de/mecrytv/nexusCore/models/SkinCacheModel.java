@@ -39,4 +39,7 @@ public class SkinCacheModel implements ICacheModel {
     }
 
     public String getTextureValue() { return textureValue; }
+    public long getLastUpdated() {
+        return lastUpdated;
+    }
 }
