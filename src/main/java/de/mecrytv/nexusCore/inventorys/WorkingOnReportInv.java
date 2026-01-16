@@ -95,6 +95,7 @@ public class WorkingOnReportInv {
             ));
 
             List<Component> lore = new ArrayList<>();
+            lore.add(Component.empty());
             lore.add(TranslationUtils.sendGUITranslation(langCode, "gui.reports.heads.target", "{target}", targetName));
             lore.add(TranslationUtils.sendGUITranslation(langCode, "gui.reports.heads.reporter", "{reporter}", reporterName));
             lore.add(TranslationUtils.sendGUITranslation(langCode, "gui.reports.heads.reason")

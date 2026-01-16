@@ -121,6 +121,7 @@ public class ReportsInv {
             meta.displayName(TranslationUtils.sendGUITranslation(langCode, "gui.reports.heads.title", "{number}", String.valueOf(reportNumber), "{caseID}", report.getReportID()));
 
             List<Component> lore = new ArrayList<>();
+            lore.add(Component.empty());
             lore.add(TranslationUtils.sendGUITranslation(langCode, "gui.reports.heads.target", "{target}", targetName));
             lore.add(TranslationUtils.sendGUITranslation(langCode, "gui.reports.heads.reporter", "{reporter}", report.getReporterName()));
             lore.add(TranslationUtils.sendGUITranslation(langCode, "gui.reports.heads.time", "{date}", new SimpleDateFormat("dd.MM.yyyy").format(new Date(report.getReportTime())), "{time}", new SimpleDateFormat("HH:mm:ss").format(new Date(report.getReportTime()))));
