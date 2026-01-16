@@ -5,7 +5,9 @@ import de.mecrytv.languageapi.LanguageAPI;
 import de.mecrytv.nexusCore.commands.ReportCommand;
 import de.mecrytv.nexusCore.commands.ReportsCommand;
 import de.mecrytv.nexusCore.manager.ConfigManager;
+import de.mecrytv.nexusCore.manager.SkinCacheManager;
 import de.mecrytv.nexusCore.models.ReportModel;
+import de.mecrytv.nexusCore.models.SkinCacheModel;
 import de.mecrytv.utils.DatabaseConfig;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -20,6 +22,7 @@ public final class NexusCore extends JavaPlugin {
     private LanguageAPI languageAPI;
     private ConfigManager config;
     private DatabaseAPI databaseAPI;
+    private SkinCacheManager skinCacheManager;
 
     @Override
     public void onEnable() {
@@ -41,12 +44,15 @@ public final class NexusCore extends JavaPlugin {
         this.databaseAPI = new DatabaseAPI(dbConfig);
 
         databaseAPI.registerModel("reports", ReportModel::new);
+        databaseAPI.registerModel("skins", SkinCacheModel::new);
 
         if (Bukkit.getPluginManager().getPlugin("HeadDatabase") != null) {
             getLogger().info("✅ HeadDatabase-API erfolgreich gefunden!");
         } else {
             getLogger().warning("❌ HeadDatabase wurde nicht gefunden! GUI-Flaggen funktionieren nicht.");
         }
+
+        this.skinCacheManager = new SkinCacheManager();
 
         getCommand("report").setExecutor(new ReportCommand());
         getCommand("reports").setExecutor(new ReportsCommand());
@@ -75,5 +81,8 @@ public final class NexusCore extends JavaPlugin {
     }
     public DatabaseAPI getDatabaseAPI() {
         return databaseAPI;
+    }
+    public SkinCacheManager getSkinCacheManager() {
+        return skinCacheManager;
     }
 }
