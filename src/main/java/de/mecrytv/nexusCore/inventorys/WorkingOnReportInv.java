@@ -64,7 +64,7 @@ public class WorkingOnReportInv {
                     for (ReportModel report : allReports) {
                         if (!"WORKING_ON".equalsIgnoreCase(report.getState())) continue;
 
-                        gui.addItem(createReportHead(report, finalLang, reportCounter));
+                        gui.addItem(createReportHead(gui, report, finalLang, reportCounter));
                         reportCounter++;
                     }
 
@@ -74,7 +74,7 @@ public class WorkingOnReportInv {
         });
     }
 
-    private GuiItem createReportHead(ReportModel report, String langCode, int reportNumber){
+    private GuiItem createReportHead(ScrollingGui gui, ReportModel report, String langCode, int reportNumber){
         String targetName = (report.getTargetName() != null) ? report.getTargetName() : "Unknown";
         String reporterName = (report.getReporterName() != null) ? report.getReporterName() : "Unknown";
         UUID targetUUID = UUID.fromString(report.getTargetUUID());
@@ -110,13 +110,7 @@ public class WorkingOnReportInv {
             meta.lore(lore);
         });
 
-        NexusCore.getInstance().getSkinCacheManager().getProfile(targetUUID, targetName).thenAccept(profile -> {
-            Bukkit.getScheduler().runTask(NexusCore.getInstance(), () -> {
-                head.editMeta(SkullMeta.class, meta -> meta.setPlayerProfile(profile));
-            });
-        });
-
-        return ItemBuilder.from(head).asGuiItem(event -> {
+        GuiItem guiItem = ItemBuilder.from(head).asGuiItem(event -> {
             Player clicker = (Player) event.getWhoClicked();
             String clickerUUID = clicker.getUniqueId().toString();
             String staffUUID = (report.getStaffUUID() != null) ? report.getStaffUUID() : "";
@@ -150,5 +144,15 @@ public class WorkingOnReportInv {
             // TODO: Open Detail Inventory
             clicker.closeInventory();
         });
+
+        NexusCore.getInstance().getSkinCacheManager().getProfile(targetUUID, targetName).thenAccept(profile -> {
+            Bukkit.getScheduler().runTask(NexusCore.getInstance(), () -> {
+                head.editMeta(SkullMeta.class, meta -> meta.setPlayerProfile(profile));
+                guiItem.setItemStack(head);
+                gui.update();
+            });
+        });
+
+        return guiItem;
     }
 }

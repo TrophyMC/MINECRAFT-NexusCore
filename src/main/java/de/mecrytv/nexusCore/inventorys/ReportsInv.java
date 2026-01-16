@@ -12,10 +12,8 @@ import dev.triumphteam.gui.guis.ScrollingGui;
 import dev.triumphteam.gui.components.ScrollType;
 import me.arcaniax.hdb.api.HeadDatabaseAPI;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -69,7 +67,7 @@ public class ReportsInv {
                     for (ReportModel report : allReports) {
                         if (!"OPEN".equalsIgnoreCase(report.getState())) continue;
 
-                        gui.addItem(createReportHead(report, finalLang, reportCounter));
+                        gui.addItem(createReportHead(gui, report, finalLang, reportCounter));
                         reportCounter++;
                     }
 
@@ -113,7 +111,7 @@ public class ReportsInv {
         }
     }
 
-    private GuiItem createReportHead(ReportModel report, String langCode, int reportNumber) {
+    private GuiItem createReportHead(ScrollingGui gui, ReportModel report, String langCode, int reportNumber) {
         UUID targetUUID = UUID.fromString(report.getTargetUUID());
         String targetName = (report.getTargetName() != null) ? report.getTargetName() : "Unknown";
 
@@ -126,19 +124,26 @@ public class ReportsInv {
             lore.add(TranslationUtils.sendGUITranslation(langCode, "gui.reports.heads.target", "{target}", targetName));
             lore.add(TranslationUtils.sendGUITranslation(langCode, "gui.reports.heads.reporter", "{reporter}", report.getReporterName()));
             lore.add(TranslationUtils.sendGUITranslation(langCode, "gui.reports.heads.time", "{date}", new SimpleDateFormat("dd.MM.yyyy").format(new Date(report.getReportTime())), "{time}", new SimpleDateFormat("HH:mm:ss").format(new Date(report.getReportTime()))));
+            lore.add(Component.empty());
+            lore.add(TranslationUtils.sendGUITranslation(langCode, "gui.reports.heads.state", "{state}", report.getState()));
+
             meta.lore(lore);
+        });
+
+        GuiItem guiItem = ItemBuilder.from(head).asGuiItem(event -> {
+            Player clicker = (Player) event.getWhoClicked();
+            SkullMeta meta = (SkullMeta) head.getItemMeta();
+            new ClaimReportInv().open(clicker, report.getReportID(), reportNumber, meta.getPlayerProfile());
         });
 
         NexusCore.getInstance().getSkinCacheManager().getProfile(targetUUID, targetName).thenAccept(profile -> {
             Bukkit.getScheduler().runTask(NexusCore.getInstance(), () -> {
                 head.editMeta(SkullMeta.class, meta -> meta.setPlayerProfile(profile));
+                guiItem.setItemStack(head);
+                gui.update();
             });
         });
 
-        return ItemBuilder.from(head).asGuiItem(event -> {
-            Player clicker = (Player) event.getWhoClicked();
-            SkullMeta meta = (SkullMeta) head.getItemMeta();
-            new ClaimReportInv().open(clicker, report.getReportID(), reportNumber, meta.getPlayerProfile());
-        });
+        return guiItem;
     }
 }
