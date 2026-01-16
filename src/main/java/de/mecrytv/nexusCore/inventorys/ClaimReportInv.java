@@ -64,7 +64,7 @@ public class ClaimReportInv {
 
                             meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
 
-                            meta.displayName(TranslationUtils.sendGUITranslation(finalLang, "gui.claimReport.head.title",
+                            meta.displayName(TranslationUtils.sendGUITranslation(finalLang, "gui.reports.heads.title",
                                     "{number}", String.valueOf(reportNum),
                                     "{caseID}", report.getReportID()
                             ));
@@ -72,6 +72,7 @@ public class ClaimReportInv {
                             Component reasonDisplay = TranslationUtils.sendGUITranslation(finalLang, "gui.report.reasons." + report.getReason() + ".name");
 
                             List<Component> lore = new ArrayList<>();
+                            lore.add(Component.empty());
                             lore.add(TranslationUtils.sendGUITranslation(finalLang, "gui.reports.heads.target", "{target}", report.getTargetName()));
                             lore.add(TranslationUtils.sendGUITranslation(finalLang, "gui.reports.heads.reporter", "{reporter}", report.getReporterName()));
                             lore.add(TranslationUtils.sendGUITranslation(finalLang, "gui.reports.heads.reason")
