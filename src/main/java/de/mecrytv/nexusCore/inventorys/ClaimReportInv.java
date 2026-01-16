@@ -72,9 +72,9 @@ public class ClaimReportInv {
                             Component reasonDisplay = TranslationUtils.sendGUITranslation(finalLang, "gui.report.reasons." + report.getReason() + ".name");
 
                             List<Component> lore = new ArrayList<>();
-                            lore.add(TranslationUtils.sendGUITranslation(finalLang, "gui.claimReport.head.target", "{target}", report.getTargetName()));
-                            lore.add(TranslationUtils.sendGUITranslation(finalLang, "gui.claimReport.head.reporter", "{reporter}", report.getReporterName()));
-                            lore.add(TranslationUtils.sendGUITranslation(finalLang, "gui.claimReport.head.reason")
+                            lore.add(TranslationUtils.sendGUITranslation(finalLang, "gui.reports.heads.target", "{target}", report.getTargetName()));
+                            lore.add(TranslationUtils.sendGUITranslation(finalLang, "gui.reports.heads.reporter", "{reporter}", report.getReporterName()));
+                            lore.add(TranslationUtils.sendGUITranslation(finalLang, "gui.reports.heads.reason")
                                     .replaceText(builder -> builder.matchLiteral("{reason}").replacement(reasonDisplay)));
 
                             meta.lore(lore);
