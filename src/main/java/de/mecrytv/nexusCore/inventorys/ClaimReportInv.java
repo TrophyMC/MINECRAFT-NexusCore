@@ -116,7 +116,6 @@ public class ClaimReportInv {
                         });
 
                         GuiItem denyItem = ItemBuilder.from(denyReport).asGuiItem(event -> {
-                            gui.close(player);
                             new ReportsInv().open(player);
                         });
 
