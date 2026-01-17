@@ -155,6 +155,8 @@ public class ActionReportInv {
             });
             GuiItem closeGuiItem = ItemBuilder.from(closeItem).asGuiItem(event -> gui.close(player));
 
+            gui.getFiller().fill(ItemBuilder.from(Material.BLACK_STAINED_GLASS_PANE).asGuiItem());
+
             gui.setItem(1, 1, targetHeadItem);
             gui.setItem(2, 5, unClaimGuiItem);
             gui.setItem(3, 4, historyGuiItem);
