@@ -58,4 +58,27 @@ public class TranslationUtils {
         }
         return component;
     }
+
+    public static Component sendChatTranslation(String langCode, String configKey, String... replacements) {
+        NexusCore plugin = NexusCore.getInstance();
+        String message = plugin.getLanguageAPI().getTranslation(langCode, configKey);
+
+        if ((message == null || message.isEmpty()) && !langCode.equals("en_US")) {
+            message = plugin.getLanguageAPI().getTranslation("en_US", configKey);
+        }
+        if (message == null) message = configKey;
+
+        Component component = MiniMessage.miniMessage().deserialize(message);
+
+        if (replacements != null && replacements.length > 1) {
+            for (int i = 0; i < replacements.length; i += 2) {
+                String target = replacements[i];
+                String value = replacements[i + 1];
+                if (target != null && value != null) {
+                    component = component.replaceText(builder -> builder.matchLiteral(target).replacement(value));
+                }
+            }
+        }
+        return plugin.getPrefix().append(component);
+    }
 }
