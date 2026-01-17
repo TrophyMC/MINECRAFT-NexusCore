@@ -138,7 +138,7 @@ public class WorkingOnReportInv {
 
             if (!isOwner && !hasBypassPerms) {
                 clicker.closeInventory();
-                TranslationUtils.sendTranslation(clicker, langCode, "messages.reports.not_your_report");
+                TranslationUtils.sendTranslation(clicker, langCode, "messages.report.reports.not_your_report");
                 return;
             }
 

@@ -116,7 +116,7 @@ public class ReportInv {
 
             String reasonStr = MiniMessage.miniMessage().serialize(reasonName);
 
-            TranslationUtils.sendTranslation(clicker, langCode, "messages.report_success",
+            TranslationUtils.sendTranslation(clicker, langCode, "messages.report.report_success",
                     "{target}", target.getName(),
                     "{reason}", reasonStr
             );

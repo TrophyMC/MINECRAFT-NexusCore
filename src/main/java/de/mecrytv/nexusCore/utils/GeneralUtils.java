@@ -56,7 +56,7 @@ public class GeneralUtils {
                         final String finalLang = langCode;
 
                         String rawMessage = NexusCore.getInstance().getLanguageAPI()
-                                .getTranslation(finalLang, "messages.staff_report_actionbar");
+                                .getTranslation(finalLang, "messages.report.staff_report_actionbar");
 
                         if (rawMessage == null) rawMessage = "<red>New Report! <gray>Open: <yellow>{count}";
 
