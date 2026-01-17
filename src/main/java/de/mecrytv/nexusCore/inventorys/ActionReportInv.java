@@ -114,14 +114,18 @@ public class ActionReportInv {
                 meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
                 meta.displayName(TranslationUtils.sendGUITranslation(langCode, "gui.actionReport.history"));
             });
-            GuiItem historyGuiItem = ItemBuilder.from(historyItem).asGuiItem();
+            GuiItem historyGuiItem = ItemBuilder.from(historyItem).asGuiItem(event -> {
+                // TODO: Open History GUI
+            });
 
             ItemStack punishItem = new ItemStack(Material.ANVIL);
             punishItem.editMeta(meta -> {
                 meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
                 meta.displayName(TranslationUtils.sendGUITranslation(langCode, "gui.actionReport.punish"));
             });
-            GuiItem punishGuiItem = ItemBuilder.from(punishItem).asGuiItem();
+            GuiItem punishGuiItem = ItemBuilder.from(punishItem).asGuiItem(event -> {
+                // TODO: Open Punish GUI
+            });
 
             ItemStack proofItem = new ItemStack(Material.PAPER);
             proofItem.editMeta(meta -> {
@@ -140,14 +144,16 @@ public class ActionReportInv {
                 meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
                 meta.displayName(TranslationUtils.sendGUITranslation(langCode, "gui.actionReport.teleport"));
             });
-            GuiItem teleportGuiItem = ItemBuilder.from(teleportItem).asGuiItem();
+            GuiItem teleportGuiItem = ItemBuilder.from(teleportItem).asGuiItem(event -> {
+                // TODO: Teleport to Target (Polocloud API)
+            });
 
             ItemStack closeItem = new ItemStack(Material.BARRIER);
             closeItem.editMeta(meta -> {
                 meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
                 meta.displayName(TranslationUtils.sendGUITranslation(langCode, "gui.actionReport.close"));
             });
-            GuiItem closeGuiItem = ItemBuilder.from(closeItem).asGuiItem();
+            GuiItem closeGuiItem = ItemBuilder.from(closeItem).asGuiItem(event -> gui.close(player));
 
             gui.setItem(1, 1, targetHeadItem);
             gui.setItem(2, 5, unClaimGuiItem);
