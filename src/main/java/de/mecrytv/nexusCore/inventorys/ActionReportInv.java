@@ -17,7 +17,9 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -51,6 +53,10 @@ public class ActionReportInv {
 
     private void renderGUI(Player player, ReportModel report, int reportNum, String langCode, PlayerProfile targetProfile) {
         Bukkit.getScheduler().runTask(NexusCore.getInstance(), () -> {
+            SimpleDateFormat dateFmt = new SimpleDateFormat("dd.MM.yyyy");
+            SimpleDateFormat timeFmt = new SimpleDateFormat("HH:mm:ss");
+            Date dateObj = new Date(report.getReportTime());
+
             Component title = TranslationUtils.sendGUITranslation(langCode, "gui.actionReport.title");
 
             Gui gui = Gui.gui()
@@ -78,6 +84,10 @@ public class ActionReportInv {
                 lore.add(TranslationUtils.sendGUITranslation(langCode, "gui.reports.heads.reporter", "{reporter}", report.getReporterName()));
                 lore.add(TranslationUtils.sendGUITranslation(langCode, "gui.reports.heads.reason")
                         .replaceText(builder -> builder.matchLiteral("{reason}").replacement(reasonDisplay)));
+                lore.add(TranslationUtils.sendGUITranslation(langCode, "gui.reports.heads.time",
+                        "{date}", dateFmt.format(dateObj),
+                        "{time}", timeFmt.format(dateObj)
+                ));
 
                 lore.add(Component.empty());
                 lore.add(TranslationUtils.sendGUITranslation(langCode, "gui.reports.heads.state", "{state}", report.getState()));
@@ -87,7 +97,7 @@ public class ActionReportInv {
             });
             GuiItem targetHeadItem = ItemBuilder.from(targetHead).asGuiItem();
 
-            ItemStack unClaimItem = new ItemStack(Material.RED_CONCRETE);
+            ItemStack unClaimItem = new ItemStack(Material.RED_DYE);
             unClaimItem.editMeta(meta -> {
                 meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
                 meta.displayName(TranslationUtils.sendGUITranslation(langCode, "gui.actionReport.unclaim"));
