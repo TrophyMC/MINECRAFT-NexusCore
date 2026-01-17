@@ -28,6 +28,7 @@ public class ReportModel implements ICacheModel {
         this.reason = reason;
         this.state = "OPEN";
         this.staffUUID = "none";
+        this.staffName = "none";
     }
 
     @Override
