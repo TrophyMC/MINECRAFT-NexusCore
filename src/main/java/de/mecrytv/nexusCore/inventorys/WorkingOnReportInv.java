@@ -1,5 +1,6 @@
 package de.mecrytv.nexusCore.inventorys;
 
+import com.destroystokyo.paper.profile.PlayerProfile;
 import de.mecrytv.DatabaseAPI;
 import de.mecrytv.nexusCore.NexusCore;
 import de.mecrytv.nexusCore.models.ReportModel;
@@ -142,8 +143,14 @@ public class WorkingOnReportInv {
                 return;
             }
 
-            // TODO: Open Detail Inventory
+            ItemStack clickedItem = event.getCurrentItem();
+            PlayerProfile profileToPass = null;
+            if (clickedItem != null && clickedItem.getItemMeta() instanceof SkullMeta skullMeta) {
+                profileToPass = skullMeta.getPlayerProfile();
+            }
+
             clicker.closeInventory();
+            new ActionReportInv().open(clicker, report.getReportID(), reportNumber, profileToPass);
         });
 
         NexusCore.getInstance().getSkinCacheManager().getProfile(targetUUID, targetName).thenAccept(profile -> {
