@@ -36,7 +36,7 @@ public class TranslationUtils {
         NexusCore plugin = NexusCore.getInstance();
         String message = plugin.getLanguageAPI().getTranslation(langCode, configKey);
 
-        if ((message == null || message.isEmpty()) && !langCode.equals("en_US")) {
+        if ((message == null || message.isEmpty() || message.contains("Missing Lang")) && !langCode.equals("en_US")) {
             message = plugin.getLanguageAPI().getTranslation("en_US", configKey);
         }
 
