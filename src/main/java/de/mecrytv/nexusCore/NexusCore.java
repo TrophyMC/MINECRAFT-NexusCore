@@ -61,6 +61,8 @@ public final class NexusCore extends JavaPlugin {
         getCommand("reports").setExecutor(new ReportsCommand());
 
         getServer().getPluginManager().registerEvents(new ReportTeleportListener(), this);
+
+        getServer().getMessenger().registerOutgoingPluginChannel(this, "nexus:bridge");
     }
 
     @Override
