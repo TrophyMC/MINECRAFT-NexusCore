@@ -17,6 +17,9 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -155,7 +158,21 @@ public class ActionReportInv {
                 meta.displayName(TranslationUtils.sendGUITranslation(langCode, "gui.actionReport.teleport"));
             });
             GuiItem teleportGuiItem = ItemBuilder.from(teleportItem).asGuiItem(event -> {
-                // TODO: Teleport to Target (Polocloud API)
+                Player clicker = (Player) event.getWhoClicked();
+
+                ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
+                DataOutputStream out = new DataOutputStream(byteOut);
+
+                try {
+                    out.writeUTF("TeleportRequest");
+                    out.writeUTF(clicker.getUniqueId().toString());
+                    out.writeUTF(report.getTargetUUID());
+
+                    clicker.sendPluginMessage(NexusCore.getInstance(), "nexus:bridge", byteOut.toByteArray());
+                    clicker.closeInventory();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             });
 
             ItemStack closeItem = new ItemStack(Material.BARRIER);
