@@ -4,6 +4,7 @@ import de.mecrytv.DatabaseAPI;
 import de.mecrytv.languageapi.LanguageAPI;
 import de.mecrytv.nexusCore.commands.ReportCommand;
 import de.mecrytv.nexusCore.commands.ReportsCommand;
+import de.mecrytv.nexusCore.listeners.ReportTeleportListener;
 import de.mecrytv.nexusCore.manager.ConfigManager;
 import de.mecrytv.nexusCore.manager.SkinCacheManager;
 import de.mecrytv.nexusCore.models.ReportModel;
@@ -58,6 +59,8 @@ public final class NexusCore extends JavaPlugin {
 
         getCommand("report").setExecutor(new ReportCommand());
         getCommand("reports").setExecutor(new ReportsCommand());
+
+        getServer().getPluginManager().registerEvents(new ReportTeleportListener(), this);
     }
 
     @Override
