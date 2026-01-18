@@ -69,6 +69,13 @@ public class WorkingOnReportInv {
                         reportCounter++;
                     }
 
+                    ItemStack closedItem = new ItemStack(Material.BARRIER);
+                    closedItem.editMeta(meta ->
+                            meta.displayName(TranslationUtils.sendGUITranslation(finalLang, "gui.reports.close"))
+                    );
+                    GuiItem closeGuiItem = ItemBuilder.from(closedItem).asGuiItem(event -> gui.close(event.getWhoClicked()));
+
+                    gui.setItem(6, 5, closeGuiItem);
                     gui.open(player);
                 });
             });
