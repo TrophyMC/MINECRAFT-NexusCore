@@ -98,7 +98,6 @@ public class ClaimReportInv {
 
                             DatabaseAPI.updateAsync("reports", caseID, updates).thenRun(() -> {
                                 Bukkit.getScheduler().runTask(NexusCore.getInstance(), () -> {
-                                    gui.close(clicker);
                                     new WorkingOnReportInv().open(clicker);
                                 });
                             }).exceptionally(ex -> {
