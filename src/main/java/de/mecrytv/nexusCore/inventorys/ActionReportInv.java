@@ -167,6 +167,7 @@ public class ActionReportInv {
                     out.writeUTF("TeleportRequest");
                     out.writeUTF(clicker.getUniqueId().toString());
                     out.writeUTF(report.getTargetUUID());
+                    out.writeUTF(report.getTargetName());
 
                     clicker.sendPluginMessage(NexusCore.getInstance(), "nexus:bridge", byteOut.toByteArray());
                     clicker.closeInventory();
