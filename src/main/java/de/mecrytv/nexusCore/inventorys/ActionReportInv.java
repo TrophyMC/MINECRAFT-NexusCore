@@ -159,7 +159,9 @@ public class ActionReportInv {
             });
             GuiItem teleportGuiItem = ItemBuilder.from(teleportItem).asGuiItem(event -> {
                 Player clicker = (Player) event.getWhoClicked();
+                clicker.sendMessage(Component.text("§cTeleport feature is currently disabled."));
 
+                /*
                 ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
                 DataOutputStream out = new DataOutputStream(byteOut);
 
@@ -174,6 +176,7 @@ public class ActionReportInv {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                 */
             });
 
             ItemStack closeItem = new ItemStack(Material.BARRIER);
