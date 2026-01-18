@@ -32,9 +32,8 @@ public class WorkingOnReportInv {
         String playerUUID = player.getUniqueId().toString();
 
         DatabaseAPI.getInstance().getGenericAsync(
-                "language", "language", "id", "data", playerUUID
+                "language", "language", "data", "id", playerUUID
         ).thenAccept(json -> {
-
             String langCode = "en_US";
             if (json != null && json.has("languageCode")) {
                 langCode = json.get("languageCode").getAsString();

@@ -39,11 +39,10 @@ public class TranslationUtils {
         if ((message == null || message.isEmpty()) && !langCode.equals("en_US")) {
             message = plugin.getLanguageAPI().getTranslation("en_US", configKey);
         }
-        if (message == null) message = configKey;
 
-        message = message.replaceFirst("(?i)(?:<[^>]*>)*Dynamic\\s*", "");
+        if (message == null || message.isEmpty()) return Component.text(configKey);
 
-        message = message.trim();
+        message = message.replaceFirst("(?i)(?:<[^>]*>)*Dynamic\\s*", "").trim();
 
         Component component = MiniMessage.miniMessage().deserialize(message);
 

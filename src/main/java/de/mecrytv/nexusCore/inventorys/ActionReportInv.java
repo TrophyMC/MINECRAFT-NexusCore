@@ -32,7 +32,7 @@ public class ActionReportInv {
         String playerUUID = player.getUniqueId().toString();
 
         DatabaseAPI.getInstance().getGenericAsync(
-                "language", "language", "id", "data", playerUUID
+                "language", "language", "data", "id", playerUUID
         ).thenAccept(json -> {
             String langCode = "en_US";
             if (json != null && json.has("languageCode")) {
@@ -179,6 +179,22 @@ public class ActionReportInv {
                  */
             });
 
+            ItemStack rejectItem = new ItemStack(Material.BUCKET);
+            rejectItem.editMeta(meta -> {
+                meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
+                meta.displayName(TranslationUtils.sendGUITranslation(langCode, "gui.actionReport.reject"));
+            });
+            GuiItem rejectGuiItem = ItemBuilder.from(rejectItem).asGuiItem(event -> {
+                Player clicker = (Player) event.getWhoClicked();
+
+                DatabaseAPI.delete("reports", report.getReportID());
+
+                TranslationUtils.sendChatTranslation(langCode, "messages.report.rejected",
+                        "{target}", report.getTargetName()
+                );
+                gui.close(clicker);
+            });
+
             ItemStack closeItem = new ItemStack(Material.BARRIER);
             closeItem.editMeta(meta -> {
                 meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
@@ -189,11 +205,12 @@ public class ActionReportInv {
             gui.getFiller().fill(ItemBuilder.from(Material.BLACK_STAINED_GLASS_PANE).asGuiItem());
 
             gui.setItem(1, 1, targetHeadItem);
-            gui.setItem(2, 5, unClaimGuiItem);
-            gui.setItem(3, 4, historyGuiItem);
+            gui.setItem(3, 3, proofGuiItem);
             gui.setItem(3, 5, punishGuiItem);
-            gui.setItem(3, 6, proofGuiItem);
+            gui.setItem(3, 7, unClaimGuiItem);
+            gui.setItem(4, 3, historyGuiItem);
             gui.setItem(4, 5, teleportGuiItem);
+            gui.setItem(4, 7, rejectGuiItem);
             gui.setItem(6, 5, closeGuiItem);
 
             gui.open(player);
