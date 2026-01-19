@@ -14,6 +14,7 @@ import de.mecrytv.utils.DatabaseConfig;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.nio.file.Paths;
@@ -29,7 +30,17 @@ public final class NexusCore extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
-        this.languageAPI = new LanguageAPI(Paths.get("/home/minecraft/languages/"));
+
+        RegisteredServiceProvider<LanguageAPI> rsp = Bukkit.getServicesManager().getRegistration(LanguageAPI.class);
+        if (rsp != null) {
+            this.languageAPI = rsp.getProvider();
+            getLogger().info("✅ Globaly Language-Cache Successfully Synced!");
+        } else {
+            getLogger().severe("❌ Failed to sync Globaly Language-Cache! Disabling plugin.");
+            Bukkit.getPluginManager().disablePlugin(this);
+            return;
+        }
+
         this.config = new ConfigManager(getDataFolder().toPath(), "config.json");
 
         DatabaseConfig dbConfig = new DatabaseConfig(

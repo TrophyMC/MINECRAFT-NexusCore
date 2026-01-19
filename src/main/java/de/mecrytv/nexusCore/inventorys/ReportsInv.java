@@ -3,7 +3,6 @@ package de.mecrytv.nexusCore.inventorys;
 import de.mecrytv.DatabaseAPI;
 import de.mecrytv.nexusCore.NexusCore;
 import de.mecrytv.nexusCore.models.ReportModel;
-import de.mecrytv.nexusCore.utils.GeneralUtils;
 import de.mecrytv.nexusCore.utils.TranslationUtils;
 import dev.triumphteam.gui.builder.item.ItemBuilder;
 import dev.triumphteam.gui.guis.Gui;
@@ -31,112 +30,89 @@ public class ReportsInv {
     private final HeadDatabaseAPI headDatabaseAPI = new HeadDatabaseAPI();
 
     public void open(Player player) {
-        String playerUUID = player.getUniqueId().toString();
+        DatabaseAPI.<ReportModel>getAll("reports").thenAccept(allReports -> {
+            Bukkit.getScheduler().runTask(NexusCore.getInstance(), () -> {
+                Component title = TranslationUtils.getGUITranslation(player, "gui.reports.title");
 
-        DatabaseAPI.getInstance().getGenericAsync(
-                "language", "language", "id", "data", playerUUID
-        ).thenAccept(json -> {
-            String langCode = "en_US";
-            if (json != null && json.has("languageCode")) {
-                langCode = json.get("languageCode").getAsString();
-            }
+                ScrollingGui gui = Gui.scrolling()
+                        .scrollType(ScrollType.VERTICAL)
+                        .title(title)
+                        .rows(6)
+                        .pageSize(28)
+                        .disableAllInteractions()
+                        .create();
 
-            final String finalLang = langCode;
+                ItemStack borderPane = new ItemStack(Material.BLACK_STAINED_GLASS_PANE);
+                borderPane.editMeta(meta -> meta.displayName(Component.empty()));
+                gui.getFiller().fillBorder(ItemBuilder.from(borderPane).asGuiItem());
 
-            DatabaseAPI.<ReportModel>getAll("reports").thenAccept(allReports -> {
-                Bukkit.getScheduler().runTask(NexusCore.getInstance(), () -> {
+                allReports.sort(Comparator.comparingLong(ReportModel::getReportTime).reversed());
 
-                    Component title = TranslationUtils.sendGUITranslation(finalLang, "gui.reports.title");
+                int reportCounter = 1;
+                for (ReportModel report : allReports) {
+                    if (!"OPEN".equalsIgnoreCase(report.getState())) continue;
+                    gui.addItem(createReportHead(gui, report, player, reportCounter));
+                    reportCounter++;
+                }
 
-                    ScrollingGui gui = Gui.scrolling()
-                            .scrollType(ScrollType.VERTICAL)
-                            .title(title)
-                            .rows(6)
-                            .pageSize(28)
-                            .disableAllInteractions()
-                            .create();
-
-                    ItemStack borderPane = new ItemStack(Material.BLACK_STAINED_GLASS_PANE);
-                    borderPane.editMeta(meta -> meta.displayName(Component.empty()));
-                    gui.getFiller().fillBorder(ItemBuilder.from(borderPane).asGuiItem());
-
-                    allReports.sort(Comparator.comparingLong(ReportModel::getReportTime).reversed());
-
-                    int reportCounter = 1;
-                    for (ReportModel report : allReports) {
-                        if (!"OPEN".equalsIgnoreCase(report.getState())) continue;
-
-                        gui.addItem(createReportHead(gui, report, finalLang, reportCounter));
-                        reportCounter++;
-                    }
-
-                    setupStaticItems(gui, finalLang);
-                    gui.open(player);
-                });
-            }).exceptionally(ex -> {
-                TranslationUtils.sendTranslation(player, finalLang, "gui.reports.errors.loading_reports");
-                ex.printStackTrace();
-                return null;
+                setupStaticItems(gui, player);
+                gui.open(player);
             });
-        }).exceptionally(ex -> {
-            TranslationUtils.sendTranslation(player, "en_US", "gui.reports.errors.loading");
-            ex.printStackTrace();
-            return null;
         });
     }
 
-    private void setupStaticItems(ScrollingGui gui, String langCode) {
+    private void setupStaticItems(ScrollingGui gui, Player player) {
         ItemStack workingItem = new ItemStack(Material.CHEST);
-        workingItem.editMeta(meta -> meta.displayName(TranslationUtils.sendGUITranslation(langCode, "gui.reports.working")));
-        gui.setItem(1, 5, ItemBuilder.from(workingItem).asGuiItem( event -> {
+        workingItem.editMeta(meta -> {
+            meta.displayName(TranslationUtils.getGUITranslation(player, "gui.reports.working"));
+        });
+
+        gui.setItem(1, 5, ItemBuilder.from(workingItem).asGuiItem(event -> {
             Player clicker = (Player) event.getWhoClicked();
             new WorkingOnReportInv().open(clicker);
         }));
 
         ItemStack closedItem = new ItemStack(Material.BARRIER);
-        closedItem.editMeta(meta -> meta.displayName(TranslationUtils.sendGUITranslation(langCode, "gui.reports.close")));
+        closedItem.editMeta(meta -> {
+            meta.displayName(TranslationUtils.getGUITranslation(player, "gui.reports.close"));
+        });
+
         gui.setItem(6, 5, ItemBuilder.from(closedItem).asGuiItem(event -> gui.close(event.getWhoClicked())));
 
-        ItemStack prevPage = headDatabaseAPI.getItemHead("10786");
-        if (prevPage != null) {
-            prevPage.editMeta(meta -> meta.displayName(TranslationUtils.sendGUITranslation(langCode, "gui.reports.previous_page")));
-            gui.setItem(6, 4, ItemBuilder.from(prevPage).asGuiItem(event -> gui.previous()));
+        ItemStack prev = headDatabaseAPI.getItemHead("10786");
+        if (prev != null) {
+            prev.editMeta(meta -> meta.displayName(TranslationUtils.getGUITranslation(player, "gui.reports.previous_page")));
+            gui.setItem(6, 4, ItemBuilder.from(prev).asGuiItem(e -> gui.previous()));
         }
 
-        ItemStack nextPage = headDatabaseAPI.getItemHead("10783");
-        if (nextPage != null) {
-            nextPage.editMeta(meta -> meta.displayName(TranslationUtils.sendGUITranslation(langCode, "gui.reports.next_page")));
-            gui.setItem(6, 6, ItemBuilder.from(nextPage).asGuiItem(event -> gui.next()));
+        ItemStack next = headDatabaseAPI.getItemHead("10783");
+        if (next != null) {
+            next.editMeta(meta -> meta.displayName(TranslationUtils.getGUITranslation(player, "gui.reports.next_page")));
+            gui.setItem(6, 6, ItemBuilder.from(next).asGuiItem(e -> gui.next()));
         }
     }
 
-    private GuiItem createReportHead(ScrollingGui gui, ReportModel report, String langCode, int reportNumber) {
-        UUID targetUUID = UUID.fromString(report.getTargetUUID());
-        String targetName = (report.getTargetName() != null) ? report.getTargetName() : "Unknown";
-
+    private GuiItem createReportHead(ScrollingGui gui, ReportModel report, Player player, int reportNumber) {
         ItemStack head = new ItemStack(Material.PLAYER_HEAD);
         head.editMeta(SkullMeta.class, meta -> {
             meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
-            meta.displayName(TranslationUtils.sendGUITranslation(langCode, "gui.reports.heads.title", "{number}", String.valueOf(reportNumber), "{caseID}", report.getReportID()));
+            meta.displayName(TranslationUtils.getGUITranslation(player, "gui.reports.heads.title", "{number}", String.valueOf(reportNumber), "{caseID}", report.getReportID()));
 
             List<Component> lore = new ArrayList<>();
             lore.add(Component.empty());
-            lore.add(TranslationUtils.sendGUITranslation(langCode, "gui.reports.heads.target", "{target}", targetName));
-            lore.add(TranslationUtils.sendGUITranslation(langCode, "gui.reports.heads.reporter", "{reporter}", report.getReporterName()));
-            lore.add(TranslationUtils.sendGUITranslation(langCode, "gui.reports.heads.time", "{date}", new SimpleDateFormat("dd.MM.yyyy").format(new Date(report.getReportTime())), "{time}", new SimpleDateFormat("HH:mm:ss").format(new Date(report.getReportTime()))));
+            lore.add(TranslationUtils.getGUITranslation(player, "gui.reports.heads.target", "{target}", report.getTargetName()));
+            lore.add(TranslationUtils.getGUITranslation(player, "gui.reports.heads.reporter", "{reporter}", report.getReporterName()));
+            lore.add(TranslationUtils.getGUITranslation(player, "gui.reports.heads.time", "{date}", new SimpleDateFormat("dd.MM.yyyy").format(new Date(report.getReportTime())), "{time}", new SimpleDateFormat("HH:mm:ss").format(new Date(report.getReportTime()))));
             lore.add(Component.empty());
-            lore.add(TranslationUtils.sendGUITranslation(langCode, "gui.reports.heads.state", "{state}", report.getState()));
-
+            lore.add(TranslationUtils.getGUITranslation(player, "gui.reports.heads.state", "{state}", report.getState()));
             meta.lore(lore);
         });
 
         GuiItem guiItem = ItemBuilder.from(head).asGuiItem(event -> {
-            Player clicker = (Player) event.getWhoClicked();
-            SkullMeta meta = (SkullMeta) head.getItemMeta();
-            new ClaimReportInv().open(clicker, report.getReportID(), reportNumber, meta.getPlayerProfile());
+            new ClaimReportInv().open(player, report.getReportID(), reportNumber, ((SkullMeta) head.getItemMeta()).getPlayerProfile());
         });
 
-        NexusCore.getInstance().getSkinCacheManager().getProfile(targetUUID, targetName).thenAccept(profile -> {
+        NexusCore.getInstance().getSkinCacheManager().getProfile(UUID.fromString(report.getTargetUUID()), report.getTargetName()).thenAccept(profile -> {
             Bukkit.getScheduler().runTask(NexusCore.getInstance(), () -> {
                 head.editMeta(SkullMeta.class, meta -> meta.setPlayerProfile(profile));
                 guiItem.setItemStack(head);
