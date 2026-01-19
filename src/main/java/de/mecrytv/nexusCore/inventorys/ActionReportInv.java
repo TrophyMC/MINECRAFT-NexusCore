@@ -192,7 +192,7 @@ public class ActionReportInv {
 
             ItemStack border = new ItemStack(Material.BLACK_STAINED_GLASS_PANE);
             border.editMeta(meta -> meta.displayName(Component.empty()));
-            gui.getFiller().fillBorder(ItemBuilder.from(border).asGuiItem());
+            gui.getFiller().fill(ItemBuilder.from(border).asGuiItem());
 
             gui.setItem(1, 1, targetHeadItem);
             gui.setItem(3, 3, proofGuiItem);
