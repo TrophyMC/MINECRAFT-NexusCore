@@ -53,18 +53,21 @@ public class GeneralUtils {
                             langCode = json.get("languageCode").getAsString();
                         }
 
-                        final String finalLang = langCode;
-
                         String rawMessage = NexusCore.getInstance().getLanguageAPI()
-                                .getTranslation(finalLang, "messages.report.staff_report_actionbar");
+                                .getTranslation(langCode, "messages.report.staff_report_actionbar");
 
                         if (rawMessage == null) rawMessage = "<red>New Report! <gray>Open: <yellow>{count}";
 
                         String formatted = rawMessage.replace("{count}", String.valueOf(openCount));
+                        net.kyori.adventure.text.Component message = MiniMessage.miniMessage().deserialize(formatted);
 
-                        Bukkit.getScheduler().runTask(NexusCore.getInstance(), () -> {
-                            staff.sendActionBar(MiniMessage.miniMessage().deserialize(formatted));
-                        });
+                        for (int i = 0; i <= 3; i++) {
+                            Bukkit.getScheduler().runTaskLater(NexusCore.getInstance(), () -> {
+                                if (staff.isOnline()) {
+                                    staff.sendActionBar(message);
+                                }
+                            }, i * 40L);
+                        }
                     });
                 }
             }
