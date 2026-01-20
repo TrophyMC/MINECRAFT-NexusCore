@@ -147,24 +147,36 @@ public class ActionReportInv {
             });
             GuiItem teleportGuiItem = ItemBuilder.from(teleportItem).asGuiItem(event -> {
                 Player clicker = (Player) event.getWhoClicked();
-                clicker.sendMessage(Component.text("§cTeleport feature is currently disabled."));
+                UUID targetUUID = UUID.fromString(report.getTargetUUID());
 
-                /*
-                ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
-                DataOutputStream out = new DataOutputStream(byteOut);
+                Player localTarget = Bukkit.getPlayer(targetUUID);
 
-                try {
-                    out.writeUTF("TeleportRequest");
-                    out.writeUTF(clicker.getUniqueId().toString());
-                    out.writeUTF(report.getTargetUUID());
-                    out.writeUTF(report.getTargetName());
-
-                    clicker.sendPluginMessage(NexusCore.getInstance(), "nexus:bridge", byteOut.toByteArray());
+                if (localTarget != null && localTarget.isOnline()) {
+                    clicker.teleport(localTarget.getLocation());
                     clicker.closeInventory();
-                } catch (IOException e) {
-                    e.printStackTrace();
+                    TranslationUtils.sendTranslation(clicker, "listeners.report.teleport_success", "{target}", report.getTargetName());
+                    return;
+                } else if (localTarget != null && !localTarget.isOnline()){
+                    TranslationUtils.sendTranslation(clicker, "messages.report.teleport.offline",
+                            "{target}", report.getTargetName()
+                    );
+                    return;
+                } else {
+                    ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
+                    DataOutputStream out = new DataOutputStream(byteOut);
+
+                    try {
+                        out.writeUTF("TeleportRequest");
+                        out.writeUTF(clicker.getUniqueId().toString());
+                        out.writeUTF(report.getTargetUUID());
+                        out.writeUTF(report.getTargetName());
+
+                        clicker.sendPluginMessage(NexusCore.getInstance(), "nexus:bridge", byteOut.toByteArray());
+                        clicker.closeInventory();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
-                 */
             });
 
             ItemStack rejectItem = new ItemStack(Material.BUCKET);
