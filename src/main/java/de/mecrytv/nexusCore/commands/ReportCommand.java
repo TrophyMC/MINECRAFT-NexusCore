@@ -28,20 +28,6 @@ public class ReportCommand implements CommandExecutor {
             return true;
         }
 
-        String playerUUID = player.getUniqueId().toString();
-
-        DatabaseAPI.getInstance().getGenericAsync(
-                "language", "language", "id", "data", playerUUID
-        ).thenAccept(json -> {
-
-            String langCode = "en_US";
-            if (json != null && json.has("languageCode")) {
-                langCode = json.get("languageCode").getAsString();
-            }
-
-            final String finalLang = langCode;
-
-
             Bukkit.getScheduler().runTask(NexusCore.getInstance(), () -> {
 
                 if (args.length == 2 && args[0].equalsIgnoreCase("delete")) {
@@ -82,44 +68,39 @@ public class ReportCommand implements CommandExecutor {
                 if (target == null) {
                     TranslationUtils.sendTranslation(player, "commands.report.player_not_found");
                     return;
-                }
+            }
 
-                if (target.equals(player)) {
-                    TranslationUtils.sendTranslation(player, "commands.report.self_report");
+            if (target.equals(player)) {
+                TranslationUtils.sendTranslation(player, "commands.report.self_report");
+                return;
+            }
+
+            String cooldownKey = player.getUniqueId() + ":" + target.getUniqueId();
+            if (cooldowns.containsKey(cooldownKey)) {
+                long lastReport = cooldowns.get(cooldownKey);
+                long diff = System.currentTimeMillis() - lastReport;
+                long cooldownMillis = TimeUnit.MINUTES.toMillis(2);
+
+                if (diff < cooldownMillis) {
+                    long millisLeft = cooldownMillis - diff;
+                    long totalSeconds = millisLeft / 1000;
+
+                    if (totalSeconds >= 60) {
+                        long minutes = totalSeconds / 60;
+                        long seconds = totalSeconds % 60;
+
+                        TranslationUtils.sendTranslation(player, "commands.report.cooldown_minutes",
+                                "{minutes}", String.valueOf(minutes),
+                                "{seconds}", String.valueOf(seconds));
+                    } else {
+                        TranslationUtils.sendTranslation(player, "commands.report.cooldown_seconds",
+                                "{seconds}", String.valueOf(totalSeconds));
+                    }
                     return;
                 }
+            }
 
-                String cooldownKey = player.getUniqueId() + ":" + target.getUniqueId();
-                if (cooldowns.containsKey(cooldownKey)) {
-                    long lastReport = cooldowns.get(cooldownKey);
-                    long diff = System.currentTimeMillis() - lastReport;
-                    long cooldownMillis = TimeUnit.MINUTES.toMillis(2);
-
-                    if (diff < cooldownMillis) {
-                        long millisLeft = cooldownMillis - diff;
-                        long totalSeconds = millisLeft / 1000;
-
-                        if (totalSeconds >= 60) {
-                            long minutes = totalSeconds / 60;
-                            long seconds = totalSeconds % 60;
-
-                            TranslationUtils.sendTranslation(player, "commands.report.cooldown_minutes",
-                                    "{minutes}", String.valueOf(minutes),
-                                    "{seconds}", String.valueOf(seconds));
-                        } else {
-                            TranslationUtils.sendTranslation(player, "commands.report.cooldown_seconds",
-                                    "{seconds}", String.valueOf(totalSeconds));
-                        }
-                        return;
-                    }
-                }
-
-                new ReportInv().open(player, target);
-            });
-        }).exceptionally(ex -> {
-            player.sendMessage("Bitte versuche es später erneut.");
-            ex.printStackTrace();
-            return null;
+            new ReportInv().open(player, target);
         });
 
         return true;
