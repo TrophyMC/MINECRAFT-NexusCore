@@ -46,7 +46,7 @@ public class ReportCommand implements CommandExecutor {
 
                 if (args.length == 2 && args[0].equalsIgnoreCase("delete")) {
                     if (!player.hasPermission("nexus.development")) {
-                        TranslationUtils.sendTranslation(player, finalLang, "commands.command_no_permission");
+                        TranslationUtils.sendTranslation(player, "commands.command_no_permission");
                         return;
                     }
 
@@ -55,37 +55,37 @@ public class ReportCommand implements CommandExecutor {
                     DatabaseAPI.get("reports", reportId).thenAccept(report -> {
                         if (report == null) {
                             Bukkit.getScheduler().runTask(NexusCore.getInstance(), () ->
-                                    TranslationUtils.sendTranslation(player, finalLang, "commands.report.not_found", "{id}", reportId));
+                                    TranslationUtils.sendTranslation(player, "commands.report.not_found", "{id}", reportId));
                             return;
                         }
 
                         DatabaseAPI.delete("reports", reportId);
 
                         Bukkit.getScheduler().runTask(NexusCore.getInstance(), () ->
-                                TranslationUtils.sendTranslation(player, finalLang, "commands.report.deleted_success", "{id}", reportId));
+                                TranslationUtils.sendTranslation(player, "commands.report.deleted_success", "{id}", reportId));
                     });
                     return;
                 }
 
                 if (!player.hasPermission("nexus.report")) {
-                    TranslationUtils.sendTranslation(player, finalLang, "commands.command_no_permission");
+                    TranslationUtils.sendTranslation(player, "commands.command_no_permission");
                     return;
                 }
 
                 if (args.length != 1) {
-                    TranslationUtils.sendTranslation(player, finalLang, "commands.report.usage");
+                    TranslationUtils.sendTranslation(player, "commands.report.usage");
                     return;
                 }
 
                 Player target = Bukkit.getPlayer(args[0]);
 
                 if (target == null) {
-                    TranslationUtils.sendTranslation(player, finalLang, "commands.report.player_not_found");
+                    TranslationUtils.sendTranslation(player, "commands.report.player_not_found");
                     return;
                 }
 
                 if (target.equals(player)) {
-                    TranslationUtils.sendTranslation(player, finalLang, "commands.report.self_report");
+                    TranslationUtils.sendTranslation(player, "commands.report.self_report");
                     return;
                 }
 
@@ -103,11 +103,11 @@ public class ReportCommand implements CommandExecutor {
                             long minutes = totalSeconds / 60;
                             long seconds = totalSeconds % 60;
 
-                            TranslationUtils.sendTranslation(player, finalLang, "commands.report.cooldown_minutes",
+                            TranslationUtils.sendTranslation(player, "commands.report.cooldown_minutes",
                                     "{minutes}", String.valueOf(minutes),
                                     "{seconds}", String.valueOf(seconds));
                         } else {
-                            TranslationUtils.sendTranslation(player, finalLang, "commands.report.cooldown_seconds",
+                            TranslationUtils.sendTranslation(player, "commands.report.cooldown_seconds",
                                     "{seconds}", String.valueOf(totalSeconds));
                         }
                         return;
