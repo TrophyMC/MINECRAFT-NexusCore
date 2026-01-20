@@ -3,6 +3,7 @@ package de.mecrytv.nexusCore.listeners;
 import de.mecrytv.DatabaseAPI;
 import de.mecrytv.nexusCore.NexusCore;
 import de.mecrytv.nexusCore.models.TeleportModel;
+import de.mecrytv.nexusCore.utils.TranslationUtils;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -27,9 +28,7 @@ public class ReportTeleportListener implements Listener {
 
                     if (target != null && target.isOnline()){
                         staff.teleport(target);
-                        staff.sendMessage(NexusCore.getInstance().getPrefix().append(
-                                Component.text("§7Du wurdest zum Ziel teleportiert.")
-                        ));
+                        TranslationUtils.sendTranslation(staff, "listeners.report.teleport_success", "{target}", target.getName());
                     }
                     DatabaseAPI.delete("reportteleport", staff.getUniqueId().toString());
                 }, 10L);
