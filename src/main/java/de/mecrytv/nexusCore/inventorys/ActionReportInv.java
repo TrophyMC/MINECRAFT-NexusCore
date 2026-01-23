@@ -152,6 +152,10 @@ public class ActionReportInv {
                 Player localTarget = Bukkit.getPlayer(targetUUID);
 
                 if (localTarget != null && localTarget.isOnline()) {
+                    if (!NexusCore.getInstance().getVanishManager().isVanished(clicker)) {
+                        NexusCore.getInstance().getVanishManager().addVanish(clicker);
+                    }
+
                     clicker.teleport(localTarget.getLocation());
                     clicker.closeInventory();
                     TranslationUtils.sendTranslation(clicker, "listeners.report.teleport_success", "{target}", report.getTargetName());

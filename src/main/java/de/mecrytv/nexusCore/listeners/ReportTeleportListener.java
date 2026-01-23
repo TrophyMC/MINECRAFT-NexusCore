@@ -27,6 +27,10 @@ public class ReportTeleportListener implements Listener {
                     Player target = Bukkit.getPlayer(targetUUID);
 
                     if (target != null && target.isOnline()){
+                        if (!NexusCore.getInstance().getVanishManager().isVanished(staff)) {
+                            NexusCore.getInstance().getVanishManager().addVanish(staff);
+                        }
+
                         staff.teleport(target);
                         TranslationUtils.sendTranslation(staff, "listeners.report.teleport_success", "{target}", target.getName());
                     }
