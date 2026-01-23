@@ -7,6 +7,9 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.entity.Player;
 import org.bukkit.command.CommandSender;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class TranslationUtils {
 
     private static String getLang(CommandSender sender) {
@@ -41,6 +44,26 @@ public class TranslationUtils {
 
         message = message.replaceFirst("(?i)(?:<[^>]*>)*Dynamic\\s*", "").trim();
         return applyReplacements(MiniMessage.miniMessage().deserialize(message), replacements);
+    }
+
+    public static List<Component> getGUILoreTranslation(Player player, String configKey, String... replacements) {
+        String langCode = getLang(player);
+        String message = NexusCore.getInstance().getLanguageAPI().getTranslation(langCode, configKey);
+
+        if ((message == null || message.contains("Missing Lang")) && !langCode.equals("en_US")) {
+            message = NexusCore.getInstance().getLanguageAPI().getTranslation("en_US", configKey);
+        }
+        if (message == null || message.contains("Missing Lang")) return List.of(Component.text(configKey));
+
+        message = message.replaceFirst("(?i)(?:<[^>]*>)*Dynamic\\s*", "").trim();
+
+        List<Component> lore = new ArrayList<>();
+        for (String line : message.split("\n")) {
+            if (!line.isEmpty()) {
+                lore.add(applyReplacements(MiniMessage.miniMessage().deserialize(line), replacements));
+            }
+        }
+        return lore;
     }
 
     private static Component applyReplacements(Component component, String... replacements) {
