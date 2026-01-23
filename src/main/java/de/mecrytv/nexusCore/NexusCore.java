@@ -4,6 +4,7 @@ import de.mecrytv.DatabaseAPI;
 import de.mecrytv.languageapi.LanguageAPI;
 import de.mecrytv.nexusCore.commands.ReportCommand;
 import de.mecrytv.nexusCore.commands.ReportsCommand;
+import de.mecrytv.nexusCore.listeners.ChatLogListener;
 import de.mecrytv.nexusCore.listeners.ReportTeleportListener;
 import de.mecrytv.nexusCore.listeners.VanishListener;
 import de.mecrytv.nexusCore.manager.ConfigManager;
@@ -80,6 +81,7 @@ public final class NexusCore extends JavaPlugin {
 
         getServer().getPluginManager().registerEvents(new ReportTeleportListener(), this);
         getServer().getPluginManager().registerEvents(new VanishListener(), this);
+        getServer().getPluginManager().registerEvents(new ChatLogListener(), this);
 
         getServer().getMessenger().registerOutgoingPluginChannel(this, "nexus:bridge");
     }
