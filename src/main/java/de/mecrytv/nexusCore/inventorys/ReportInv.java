@@ -4,6 +4,8 @@ import de.mecrytv.DatabaseAPI;
 import de.mecrytv.languageapi.profile.ILanguageProfile;
 import de.mecrytv.nexusCore.NexusCore;
 import de.mecrytv.nexusCore.commands.ReportCommand;
+import de.mecrytv.nexusCore.enums.ProofType;
+import de.mecrytv.nexusCore.models.ProofModel;
 import de.mecrytv.nexusCore.models.ReportModel;
 import de.mecrytv.nexusCore.utils.GeneralUtils;
 import de.mecrytv.nexusCore.utils.TranslationUtils;
@@ -26,10 +28,7 @@ import java.util.UUID;
 public class ReportInv {
 
     public void open(Player player, Player target) {
-        String langCode = NexusCore.getInstance().getLanguageAPI()
-                .getProfile(player.getUniqueId(), "en_US").getLanguageCode();
-
-        Bukkit.getScheduler().runTask(NexusCore.getInstance(), () -> {
+       Bukkit.getScheduler().runTask(NexusCore.getInstance(), () -> {
 
             Component title = TranslationUtils.getGUITranslation(player, "gui.report.title", "{target}", target.getName());
 
@@ -43,7 +42,7 @@ public class ReportInv {
             head.editMeta(SkullMeta.class, meta -> {
                 meta.setPlayerProfile(target.getPlayerProfile());
                 meta.displayName(TranslationUtils.getGUITranslation(player, "gui.report.head.name"));
-                meta.lore(getTranslatedLore(langCode, "gui.report.head.lore"));
+                meta.lore(TranslationUtils.getGUILoreTranslation(player, "gui.report.head.lore"));
             });
             gui.setItem(1, 5, ItemBuilder.from(head).asGuiItem());
 
@@ -75,15 +74,13 @@ public class ReportInv {
 
     private GuiItem createReportItem(Material material, String reasonKey, Player player, Player target, Gui gui) {
         String baseKey = "report.reasons." + reasonKey;
-        String langCode = NexusCore.getInstance().getLanguageAPI().getProfile(player.getUniqueId(), "en_US").getLanguageCode();
 
         Component reasonName = TranslationUtils.getGUITranslation(player, baseKey + ".name");
-        List<Component> loreLines = getTranslatedLore(langCode, baseKey + ".lore");
 
         ItemStack item = new ItemStack(material);
         item.editMeta(meta -> {
             meta.displayName(reasonName);
-            meta.lore(loreLines);
+            meta.lore(TranslationUtils.getGUILoreTranslation(player, baseKey + ".lore"));
             meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
         });
 
@@ -102,7 +99,9 @@ public class ReportInv {
             report.setReportID(reportID);
             DatabaseAPI.set("reports", report);
 
-            TranslationUtils.sendTranslation(clicker, "report.report_success",
+            saveProofIfNecessary(reportID, reasonKey, target);
+
+            TranslationUtils.sendTranslation(clicker, "gui.report.report_success",
                     "{target}", target.getName(),
                     "{reason}", MiniMessage.miniMessage().serialize(reasonName));
 
@@ -112,16 +111,24 @@ public class ReportInv {
         });
     }
 
-    private List<Component> getTranslatedLore(String langCode, String configKey) {
-        String message = NexusCore.getInstance().getLanguageAPI().getTranslation(langCode, configKey);
-        if (message.contains("Missing Lang") && !langCode.equals("en_US")) {
-            message = NexusCore.getInstance().getLanguageAPI().getTranslation("en_US", configKey);
-        }
+    private void saveProofIfNecessary(String reportID, String reasonKey, Player target) {
+        List<String> chatSnapshot = NexusCore.getInstance().getMessageLogManager().getSnapshot(target.getUniqueId());
 
-        List<Component> loreComponents = new ArrayList<>();
-        for (String line : message.split("\n")) {
-            if (!line.isEmpty()) loreComponents.add(MiniMessage.miniMessage().deserialize(line));
+        switch (reasonKey.toLowerCase()) {
+            case "provocation":
+            case "insult":
+            case "chat_spam":
+            case "server_insult":
+            case "threat":
+            case "racism":
+            case "death_wish":
+                if (!chatSnapshot.isEmpty()) {
+                    ProofModel proof = new ProofModel(reportID, ProofType.MESSAGE, chatSnapshot);
+                    DatabaseAPI.set("proofs", proof);
+                }
+                break;
+            default:
+                break;
         }
-        return loreComponents;
     }
 }
