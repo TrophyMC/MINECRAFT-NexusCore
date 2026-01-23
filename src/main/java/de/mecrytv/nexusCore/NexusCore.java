@@ -7,6 +7,7 @@ import de.mecrytv.nexusCore.commands.ReportsCommand;
 import de.mecrytv.nexusCore.listeners.ReportTeleportListener;
 import de.mecrytv.nexusCore.listeners.VanishListener;
 import de.mecrytv.nexusCore.manager.ConfigManager;
+import de.mecrytv.nexusCore.manager.MessageLogManager;
 import de.mecrytv.nexusCore.manager.SkinCacheManager;
 import de.mecrytv.nexusCore.manager.VanishManager;
 import de.mecrytv.nexusCore.models.ReportModel;
@@ -29,6 +30,7 @@ public final class NexusCore extends JavaPlugin {
     private DatabaseAPI databaseAPI;
     private SkinCacheManager skinCacheManager;
     private VanishManager vanishManager;
+    private MessageLogManager messageLogManager;
 
     @Override
     public void onEnable() {
@@ -71,6 +73,7 @@ public final class NexusCore extends JavaPlugin {
 
         this.skinCacheManager = new SkinCacheManager();
         this.vanishManager = new VanishManager(this);
+        this.messageLogManager = new MessageLogManager(this);
 
         getCommand("report").setExecutor(new ReportCommand());
         getCommand("reports").setExecutor(new ReportsCommand());
@@ -83,6 +86,7 @@ public final class NexusCore extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        if (this.messageLogManager != null) this.messageLogManager.flushAll();
         if (this.databaseAPI != null) this.databaseAPI.shutdown();
     }
 
@@ -110,5 +114,8 @@ public final class NexusCore extends JavaPlugin {
     }
     public VanishManager getVanishManager() {
         return vanishManager;
+    }
+    public MessageLogManager getMessageLogManager() {
+        return messageLogManager;
     }
 }
