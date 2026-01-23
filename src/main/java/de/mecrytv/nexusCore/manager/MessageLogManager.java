@@ -81,7 +81,7 @@ public class MessageLogManager {
         snapshotCache.compute(uuid, (key, list) -> {
             if (list == null) list = new LinkedList<>();
             list.addFirst("[" + System.currentTimeMillis() + "] " + message);
-            if (list.size() > 50) list.removeLast(); // Behalte nur die letzten 50
+            if (list.size() > 50) list.removeLast();
             return list;
         });
     }
