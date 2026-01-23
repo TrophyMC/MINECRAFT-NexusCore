@@ -5,8 +5,10 @@ import de.mecrytv.languageapi.LanguageAPI;
 import de.mecrytv.nexusCore.commands.ReportCommand;
 import de.mecrytv.nexusCore.commands.ReportsCommand;
 import de.mecrytv.nexusCore.listeners.ReportTeleportListener;
+import de.mecrytv.nexusCore.listeners.VanishListener;
 import de.mecrytv.nexusCore.manager.ConfigManager;
 import de.mecrytv.nexusCore.manager.SkinCacheManager;
+import de.mecrytv.nexusCore.manager.VanishManager;
 import de.mecrytv.nexusCore.models.ReportModel;
 import de.mecrytv.nexusCore.models.SkinCacheModel;
 import de.mecrytv.nexusCore.models.TeleportModel;
@@ -26,6 +28,7 @@ public final class NexusCore extends JavaPlugin {
     private ConfigManager config;
     private DatabaseAPI databaseAPI;
     private SkinCacheManager skinCacheManager;
+    private VanishManager vanishManager;
 
     @Override
     public void onEnable() {
@@ -67,11 +70,13 @@ public final class NexusCore extends JavaPlugin {
         }
 
         this.skinCacheManager = new SkinCacheManager();
+        this.vanishManager = new VanishManager(this);
 
         getCommand("report").setExecutor(new ReportCommand());
         getCommand("reports").setExecutor(new ReportsCommand());
 
         getServer().getPluginManager().registerEvents(new ReportTeleportListener(), this);
+        getServer().getPluginManager().registerEvents(new VanishListener(), this);
 
         getServer().getMessenger().registerOutgoingPluginChannel(this, "nexus:bridge");
     }
@@ -102,5 +107,8 @@ public final class NexusCore extends JavaPlugin {
     }
     public SkinCacheManager getSkinCacheManager() {
         return skinCacheManager;
+    }
+    public VanishManager getVanishManager() {
+        return vanishManager;
     }
 }
