@@ -11,12 +11,12 @@ import java.util.List;
 public class ProofModel implements ICacheModel {
 
     private String reportID;
-    private Enum<ProofType> type;
+    private ProofType type;
     private List<String> data = new ArrayList<>();
 
     public ProofModel(){}
 
-    public ProofModel(String reportID, Enum<ProofType> type, List<String> data){
+    public ProofModel(String reportID, ProofType type, List<String> data){
         this.reportID = reportID;
         this.type = type;
         this.data = data;
@@ -48,6 +48,6 @@ public class ProofModel implements ICacheModel {
         dataJson.getAsJsonArray("data").forEach(el -> this.data.add(el.getAsString()));
     }
 
-    public Enum<ProofType> getType() { return type; }
+    public ProofType getType() { return type; }
     public List<String> getData() { return data; }
 }
