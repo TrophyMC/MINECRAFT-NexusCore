@@ -12,6 +12,10 @@ import de.mecrytv.nexusCore.manager.MessageLogManager;
 import de.mecrytv.nexusCore.manager.SkinCacheManager;
 import de.mecrytv.nexusCore.manager.VanishManager;
 import de.mecrytv.nexusCore.models.*;
+import de.mecrytv.nexusCore.models.punish.BanModel;
+import de.mecrytv.nexusCore.models.punish.MuteModel;
+import de.mecrytv.nexusCore.models.punish.PunishmentHistoryModel;
+import de.mecrytv.nexusCore.models.punish.WarnModel;
 import de.mecrytv.utils.DatabaseConfig;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -65,6 +69,10 @@ public final class NexusCore extends JavaPlugin {
         databaseAPI.registerModel("reportteleport", TeleportModel::new);
         databaseAPI.registerModel("message_logs", ChatMSGModel::new);
         databaseAPI.registerModel("proofs", ProofModel::new);
+        databaseAPI.registerModel("punishments", PunishmentHistoryModel::new);
+        databaseAPI.registerModel("ban", BanModel::new);
+        databaseAPI.registerModel("mute", MuteModel::new);
+        databaseAPI.registerModel("warn", WarnModel::new);
 
         if (Bukkit.getPluginManager().getPlugin("HeadDatabase") != null) {
             getLogger().info("✅ HeadDatabase-API erfolgreich gefunden!");
