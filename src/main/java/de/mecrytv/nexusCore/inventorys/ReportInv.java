@@ -73,7 +73,7 @@ public class ReportInv {
     }
 
     private GuiItem createReportItem(Material material, String reasonKey, Player player, Player target, Gui gui) {
-        String baseKey = "report.reasons." + reasonKey;
+        String baseKey = "gui.report.reasons." + reasonKey;
 
         Component reasonName = TranslationUtils.getGUITranslation(player, baseKey + ".name");
 
