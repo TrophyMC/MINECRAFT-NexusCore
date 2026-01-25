@@ -7,10 +7,7 @@ import de.mecrytv.nexusCore.commands.ReportsCommand;
 import de.mecrytv.nexusCore.listeners.ChatLogListener;
 import de.mecrytv.nexusCore.listeners.ReportTeleportListener;
 import de.mecrytv.nexusCore.listeners.VanishListener;
-import de.mecrytv.nexusCore.manager.ConfigManager;
-import de.mecrytv.nexusCore.manager.MessageLogManager;
-import de.mecrytv.nexusCore.manager.SkinCacheManager;
-import de.mecrytv.nexusCore.manager.VanishManager;
+import de.mecrytv.nexusCore.manager.*;
 import de.mecrytv.nexusCore.models.*;
 import de.mecrytv.nexusCore.models.punish.BanModel;
 import de.mecrytv.nexusCore.models.punish.MuteModel;
@@ -34,6 +31,7 @@ public final class NexusCore extends JavaPlugin {
     private SkinCacheManager skinCacheManager;
     private VanishManager vanishManager;
     private MessageLogManager messageLogManager;
+    private PunishManager punishManager;
 
     @Override
     public void onEnable() {
@@ -83,6 +81,7 @@ public final class NexusCore extends JavaPlugin {
         this.skinCacheManager = new SkinCacheManager();
         this.vanishManager = new VanishManager(this);
         this.messageLogManager = new MessageLogManager(this);
+        this.punishManager = new PunishManager(this);
 
         getCommand("report").setExecutor(new ReportCommand());
         getCommand("reports").setExecutor(new ReportsCommand());
@@ -127,5 +126,8 @@ public final class NexusCore extends JavaPlugin {
     }
     public MessageLogManager getMessageLogManager() {
         return messageLogManager;
+    }
+    public PunishManager getPunishManager() {
+        return punishManager;
     }
 }
