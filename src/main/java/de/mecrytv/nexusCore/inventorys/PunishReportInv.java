@@ -3,8 +3,9 @@ package de.mecrytv.nexusCore.inventorys;
 import de.mecrytv.DatabaseAPI;
 import de.mecrytv.nexusCore.NexusCore;
 import de.mecrytv.nexusCore.commands.ReportCommand;
-import de.mecrytv.nexusCore.models.ReportModel;
+import de.mecrytv.nexusCore.models.punish.PunishmentHistoryModel;
 import de.mecrytv.nexusCore.utils.GeneralUtils;
+import de.mecrytv.nexusCore.utils.TimeUtils;
 import de.mecrytv.nexusCore.utils.TranslationUtils;
 import dev.triumphteam.gui.builder.item.ItemBuilder;
 import dev.triumphteam.gui.guis.Gui;
@@ -80,19 +81,14 @@ public class PunishReportInv {
             Player clicker = (Player) event.getWhoClicked();
             String reportID = GeneralUtils.generateUniqueReportID();
 
-            punishTargetFor(reportID, reasonKey, target);
+            NexusCore.getInstance().getPunishManager().executePunishment(reportID, reasonKey, target, clicker);
 
             TranslationUtils.sendTranslation(clicker, "gui.report.report_success",
                     "{target}", target.getName(),
                     "{reason}", MiniMessage.miniMessage().serialize(reasonName));
 
-            ReportCommand.setCooldown(clicker.getUniqueId(), target.getUniqueId());
             GeneralUtils.sendStaffNotification();
             gui.close(clicker);
         });
-    }
-
-    private void punishTargetFor(String reportID, String reasonKey, Player target){
-
     }
 }
