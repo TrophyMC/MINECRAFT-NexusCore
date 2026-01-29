@@ -61,6 +61,7 @@ public class PunishConfig {
             )),
             Map.entry("stats_pushing", List.of(
                     new RecordUtils.PunishmentStep(1, PunishTypes.WARN, 0),
+                    // TODO: Stats Reset Implementation
                     new RecordUtils.PunishmentStep(2, PunishTypes.TEMP_BAN, TimeUtils.days(17)),
                     new RecordUtils.PunishmentStep(3, PunishTypes.TEMP_BAN, TimeUtils.days(30)),
                     new RecordUtils.PunishmentStep(4, PunishTypes.PERMA_BAN, -1)
