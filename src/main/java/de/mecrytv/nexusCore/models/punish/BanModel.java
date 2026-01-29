@@ -2,35 +2,35 @@ package de.mecrytv.nexusCore.models.punish;
 
 import com.google.gson.JsonObject;
 import de.mecrytv.model.ICacheModel;
-import de.mecrytv.nexusCore.enums.BanType;
+import de.mecrytv.nexusCore.enums.PunishTypes;
 
 public class BanModel implements ICacheModel {
 
     private String playerUUID;
     private String reason;
     private String staffUUID;
-    private BanType banType;
+    private PunishTypes punishTypes;
     private long banTimestamp;
     private long banExpires;
     private String ipAddress;
 
     public BanModel() { }
 
-    public BanModel(String playerUUID, String reason, String staffUUID, BanType banType, long banTimestamp, long banExpires) {
+    public BanModel(String playerUUID, String reason, String staffUUID, PunishTypes punishTypes, long banTimestamp, long banExpires) {
         this.playerUUID = playerUUID;
         this.reason = reason;
         this.staffUUID = staffUUID;
-        this.banType = banType;
+        this.punishTypes = punishTypes;
         this.banTimestamp = banTimestamp;
         this.banExpires = banExpires;
         this.ipAddress = null;
     }
 
-    public BanModel(String playerUUID, String reason, String staffUUID, BanType banType, long banTimestamp, String ipAddress) {
+    public BanModel(String playerUUID, String reason, String staffUUID, PunishTypes punishTypes, long banTimestamp, String ipAddress) {
         this.playerUUID = playerUUID;
         this.reason = reason;
         this.staffUUID = staffUUID;
-        this.banType = banType;
+        this.punishTypes = punishTypes;
         this.banTimestamp = banTimestamp;
         this.ipAddress = ipAddress;
         this.banExpires = -1;
@@ -47,7 +47,7 @@ public class BanModel implements ICacheModel {
         json.addProperty("playerUUID", playerUUID);
         json.addProperty("reason", reason);
         json.addProperty("staffUUID", staffUUID);
-        json.addProperty("banType", banType.name());
+        json.addProperty("banType", punishTypes.name());
         json.addProperty("banTimestamp", banTimestamp);
         json.addProperty("banExpires", banExpires);
         json.addProperty("ipAddress", ipAddress);
@@ -59,7 +59,7 @@ public class BanModel implements ICacheModel {
         this.playerUUID = data.get("playerUUID").getAsString();
         this.reason = data.get("reason").getAsString();
         this.staffUUID = data.get("staffUUID").getAsString();
-        this.banType = BanType.valueOf(data.get("banType").getAsString());
+        this.punishTypes = PunishTypes.valueOf(data.get("punishTypes").getAsString());
         this.banTimestamp = data.get("banTimestamp").getAsLong();
         this.banExpires = data.get("banExpires").getAsLong();
         if(data.has("ipAddress") && !data.get("ipAddress").isJsonNull()) {
@@ -87,11 +87,11 @@ public class BanModel implements ICacheModel {
     public void setStaffUUID(String staffUUID) {
         this.staffUUID = staffUUID;
     }
-    public BanType getBanType() {
-        return banType;
+    public PunishTypes getBanType() {
+        return punishTypes;
     }
-    public void setBanType(BanType banType) {
-        this.banType = banType;
+    public void setBanType(PunishTypes punishTypes) {
+        this.punishTypes = punishTypes;
     }
     public long getBanTimestamp() {
         return banTimestamp;
