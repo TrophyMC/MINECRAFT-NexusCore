@@ -2,14 +2,20 @@ package de.mecrytv.nexusCore.manager;
 
 import de.mecrytv.DatabaseAPI;
 import de.mecrytv.nexusCore.NexusCore;
-import de.mecrytv.nexusCore.enums.BanType;
+import de.mecrytv.nexusCore.config.PunishConfig;
+import de.mecrytv.nexusCore.enums.PunishTypes;
 import de.mecrytv.nexusCore.models.punish.BanModel;
+import de.mecrytv.nexusCore.models.punish.MuteModel;
 import de.mecrytv.nexusCore.models.punish.PunishmentHistoryModel;
+import de.mecrytv.nexusCore.models.punish.WarnModel;
+import de.mecrytv.nexusCore.utils.RecordUtils;
 import de.mecrytv.nexusCore.utils.TimeUtils;
 import de.mecrytv.nexusCore.utils.TranslationUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.entity.Player;
+
+import java.util.List;
 
 public class PunishManager {
 
@@ -37,42 +43,43 @@ public class PunishManager {
         });
     }
 
-    private void processPunishment(int level, String reportID, String reasonKey, Player target, Player staff){
+    private void processPunishment(int level, String reportID, String reasonKey, Player target, Player staff) {
+        List<RecordUtils.PunishmentStep> steps = PunishConfig.getSteps(reasonKey);
+
+        if (steps == null || steps.isEmpty()) {
+            plugin.getLogger().warning("Keine Strafregeln für Grund gefunden: " + reasonKey);
+            return;
+        }
+
+        RecordUtils.PunishmentStep step = steps.stream()
+                .filter(s -> level >= s.level())
+                .reduce((first, second) -> second)
+                .orElse(steps.get(0));
+
+        executeStep(step, reportID, reasonKey, target, staff);
+    }
+
+    private void executeStep(RecordUtils.PunishmentStep step, String reportID, String reasonKey, Player target, Player staff) {
         long today = System.currentTimeMillis();
         String targetUUID = target.getUniqueId().toString();
         String staffUUID = staff.getUniqueId().toString();
-        String targetIp = target.getAddress() != null ? target.getAddress().getAddress().getHostAddress() : "unknown";
 
-        String baseKey = "gui.report.reasons." + reasonKey;
-        Component reasonComp = TranslationUtils.getGUITranslation(staff, baseKey + ".name");
-        String plainReason = MiniMessage.miniMessage().serialize(reasonComp);
+        String plainReason = PunishConfig.getPlainReason(staff, reasonKey);
 
-        switch (reasonKey) {
-            case "client_mod":
-                if (level == 1) {
-                    long duration = TimeUtils.days(30);
+        switch (step.type()) {
+            case WARN ->
+                    DatabaseAPI.set("warn", new WarnModel(reportID, targetUUID, plainReason, staffUUID, today));
 
-                    BanModel userBan = new BanModel(
-                            targetUUID,
-                            plainReason,
-                            staffUUID,
-                            BanType.TEMPORARY,
-                            today,
-                            today + duration
-                    );
-                    DatabaseAPI.set("ban", userBan);
-                } else if (level == 2) {
-                    BanModel userBan = new BanModel(
-                            targetUUID,
-                            plainReason,
-                            staffUUID,
-                            BanType.PERMANENT,
-                            today,
-                            targetIp
-                    );
-                    DatabaseAPI.set("ban", userBan);
-                }
-                break;
+            case MUTE ->
+                    DatabaseAPI.set("mute", new MuteModel(targetUUID, plainReason, staffUUID, today, today + step.duration()));
+
+            case TEMP_BAN ->
+                    DatabaseAPI.set("ban", new BanModel(targetUUID, plainReason, staffUUID, PunishTypes.TEMP_BAN, today, today + step.duration()));
+
+            case PERMA_BAN -> {
+                String targetIp = target.getAddress() != null ? target.getAddress().getAddress().getHostAddress() : "unknown";
+                DatabaseAPI.set("ban", new BanModel(targetUUID, plainReason, staffUUID, PunishTypes.PERMA_BAN, today, targetIp));
+            }
         }
     }
 }
