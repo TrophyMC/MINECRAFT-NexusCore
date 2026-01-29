@@ -125,7 +125,10 @@ public class ActionReportInv {
                 meta.displayName(TranslationUtils.getGUITranslation(player, "gui.actionReport.punish"));
             });
             GuiItem punishGuiItem = ItemBuilder.from(punishItem).asGuiItem(event -> {
-                // TODO: Open Punish GUI
+                Player clicker = (Player) event.getWhoClicked();
+                Player target = Bukkit.getPlayer(UUID.fromString(report.getTargetUUID()));
+
+                new PunishReportInv().open(clicker, target);
             });
 
             ItemStack proofItem = new ItemStack(Material.PAPER);
