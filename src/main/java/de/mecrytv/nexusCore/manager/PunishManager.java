@@ -70,8 +70,11 @@ public class PunishManager {
             case WARN ->
                     DatabaseAPI.set("warn", new WarnModel(reportID, targetUUID, plainReason, staffUUID, today));
 
-            case MUTE ->
+            case TEMP_MUTE ->
                     DatabaseAPI.set("mute", new MuteModel(targetUUID, plainReason, staffUUID, today, today + step.duration()));
+
+            case PERMA_MUTE ->
+                    DatabaseAPI.set("mute", new MuteModel(targetUUID, plainReason, staffUUID, today));
 
             case TEMP_BAN ->
                     DatabaseAPI.set("ban", new BanModel(targetUUID, plainReason, staffUUID, PunishTypes.TEMP_BAN, today, today + step.duration()));
