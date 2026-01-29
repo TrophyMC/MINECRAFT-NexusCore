@@ -23,7 +23,7 @@ public class PunishReportInv {
 
     public void open(Player player, Player target) {
         Bukkit.getScheduler().runTask(NexusCore.getInstance(), () -> {
-            Component title = TranslationUtils.getGUITranslation(player, "guid.punsihReport.title", "{target}", target.getName());
+            Component title = TranslationUtils.getGUITranslation(player, "gui.punsihReport.title", "{target}", target.getName());
 
             Gui gui = Gui.gui()
                     .title(title)
