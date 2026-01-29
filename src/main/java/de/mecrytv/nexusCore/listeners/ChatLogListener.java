@@ -8,11 +8,17 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import java.util.UUID;
+
 public class ChatLogListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onChat(AsyncChatEvent event) {
         String message = PlainTextComponentSerializer.plainText().serialize(event.message());
+        UUID uuid = event.getPlayer().getUniqueId();
+
+        NexusCore.getInstance().getMessageLogManager().logToSnapshot(uuid, message);
+
         NexusCore.getInstance().getMessageLogManager().log(event.getPlayer().getUniqueId(), message);
     }
 
