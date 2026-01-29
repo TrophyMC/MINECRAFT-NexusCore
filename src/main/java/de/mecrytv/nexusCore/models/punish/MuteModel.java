@@ -21,12 +21,12 @@ public class MuteModel implements ICacheModel {
         this.muteExpires = muteExpires;
     }
 
-    public MuteModel(String playerUUID, String reason, String staffUUID, long muteExpires) {
+    public MuteModel(String playerUUID, String reason, String staffUUID, long muteTimestamp) {
         this.playerUUID = playerUUID;
         this.reason = reason;
         this.staffUUID = staffUUID;
-        this.muteTimestamp = System.currentTimeMillis();
-        this.muteExpires = muteExpires;
+        this.muteTimestamp = muteTimestamp;
+        this.muteExpires = -1;
     }
 
     @Override
