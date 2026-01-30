@@ -1,5 +1,6 @@
 package de.mecrytv.nexusCore.manager;
 
+import com.google.gson.JsonObject;
 import de.mecrytv.DatabaseAPI;
 import de.mecrytv.nexusCore.NexusCore;
 import de.mecrytv.nexusCore.config.PunishConfig;
@@ -84,5 +85,22 @@ public class PunishManager {
                 DatabaseAPI.set("ban", new BanModel(targetUUID, plainReason, staffUUID, PunishTypes.PERMA_BAN, today, targetIp));
             }
         }
+        changeReportState(reportID);
+    }
+
+    private void changeReportState(String reportID){
+        if (reportID == null || reportID.isEmpty() || reportID.equalsIgnoreCase("none")) {
+            return;
+        }
+
+        JsonObject updates = new com.google.gson.JsonObject();
+        updates.addProperty("state", "CLOSED");
+
+        DatabaseAPI.updateAsync("reports", reportID, updates).thenRun(() -> {
+            plugin.getLogger().info("Report " + reportID + " wurde erfolgreich geschlossen.");
+        }).exceptionally(ex -> {
+            plugin.getLogger().severe("Fehler beim Schließen von Report " + reportID + ": " + ex.getMessage());
+            return null;
+        });
     }
 }
