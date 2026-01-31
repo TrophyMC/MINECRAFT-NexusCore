@@ -1,6 +1,6 @@
 package de.mecrytv.nexusCore.manager;
 
-import de.mecrytv.DatabaseAPI;
+import de.mecrytv.databaseapi.DatabaseAPI;
 import de.mecrytv.nexusCore.NexusCore;
 import de.mecrytv.nexusCore.models.ChatMSGModel;
 import org.bukkit.Bukkit;

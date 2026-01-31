@@ -1,9 +1,9 @@
 package de.mecrytv.nexusCore.config;
 
-import de.mecrytv.nexusCore.enums.PunishTypes;
 import de.mecrytv.nexusCore.utils.RecordUtils;
 import de.mecrytv.nexusCore.utils.TimeUtils;
 import de.mecrytv.nexusCore.utils.TranslationUtils;
+import de.mecrytv.nexusapi.enums.PunishTypes;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.entity.Player;

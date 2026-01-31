@@ -1,7 +1,7 @@
 package de.mecrytv.nexusCore.inventorys;
 
 import com.destroystokyo.paper.profile.PlayerProfile;
-import de.mecrytv.DatabaseAPI;
+import de.mecrytv.databaseapi.DatabaseAPI;
 import de.mecrytv.nexusCore.NexusCore;
 import de.mecrytv.nexusCore.models.ReportModel;
 import de.mecrytv.nexusCore.utils.TranslationUtils;

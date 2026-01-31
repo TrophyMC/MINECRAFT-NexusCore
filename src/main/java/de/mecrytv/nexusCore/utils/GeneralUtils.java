@@ -1,8 +1,9 @@
 package de.mecrytv.nexusCore.utils;
 
-import de.mecrytv.DatabaseAPI;
+import de.mecrytv.databaseapi.DatabaseAPI;
 import de.mecrytv.nexusCore.NexusCore;
 import de.mecrytv.nexusCore.models.ReportModel;
+import de.mecrytv.nexusapi.NexusAPI;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -35,45 +36,8 @@ public class GeneralUtils {
         return sb.toString();
     }
 
-    public static void sendStaffNotification() {
-        DatabaseAPI.<ReportModel>getAll("reports").thenAccept(allReports -> {
-            long openCount = allReports.stream()
-                    .filter(report -> "OPEN".equalsIgnoreCase(report.getState()))
-                    .count();
-
-            for (Player staff : Bukkit.getOnlinePlayers()) {
-                if (staff.hasPermission("nexus.staff.reports")) {
-
-                    DatabaseAPI.getInstance().getGenericAsync(
-                            "language", "language", "id", "data", staff.getUniqueId().toString()
-                    ).thenAccept(json -> {
-
-                        String langCode = "en_US";
-                        if (json != null && json.has("languageCode")) {
-                            langCode = json.get("languageCode").getAsString();
-                        }
-
-                        String rawMessage = NexusCore.getInstance().getLanguageAPI()
-                                .getTranslation(langCode, "messages.report.staff_report_actionbar");
-
-                        if (rawMessage == null) rawMessage = "<red>New Report! <gray>Open: <yellow>{count}";
-
-                        String formatted = rawMessage.replace("{count}", String.valueOf(openCount));
-                        net.kyori.adventure.text.Component message = MiniMessage.miniMessage().deserialize(formatted);
-
-                        for (int i = 0; i <= 3; i++) {
-                            Bukkit.getScheduler().runTaskLater(NexusCore.getInstance(), () -> {
-                                if (staff.isOnline()) {
-                                    staff.sendActionBar(message);
-                                }
-                            }, i * 40L);
-                        }
-                    });
-                }
-            }
-        }).exceptionally(ex -> {
-            ex.printStackTrace();
-            return null;
-        });
+    public static void sendStaffNotification(String langKey, String... replacements) {
+        NexusAPI.getInstance().getGlobalNotifyer()
+                .sendStaffNotification("nexus.staff.reports", langKey, replacements);
     }
 }

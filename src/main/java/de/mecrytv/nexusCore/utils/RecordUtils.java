@@ -1,6 +1,6 @@
 package de.mecrytv.nexusCore.utils;
 
-import de.mecrytv.nexusCore.enums.PunishTypes;
+import de.mecrytv.nexusapi.enums.PunishTypes;
 
 public class RecordUtils {
 

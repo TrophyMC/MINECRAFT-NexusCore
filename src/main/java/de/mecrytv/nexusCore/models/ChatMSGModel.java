@@ -2,7 +2,7 @@ package de.mecrytv.nexusCore.models;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import de.mecrytv.model.ICacheModel;
+import de.mecrytv.databaseapi.model.ICacheModel;
 
 import java.util.ArrayList;
 import java.util.List;

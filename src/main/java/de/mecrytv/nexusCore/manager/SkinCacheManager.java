@@ -2,7 +2,7 @@ package de.mecrytv.nexusCore.manager;
 
 import com.destroystokyo.paper.profile.PlayerProfile;
 import com.destroystokyo.paper.profile.ProfileProperty;
-import de.mecrytv.DatabaseAPI;
+import de.mecrytv.databaseapi.DatabaseAPI;
 import de.mecrytv.nexusCore.models.SkinCacheModel;
 import org.bukkit.Bukkit;
 

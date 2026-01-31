@@ -2,8 +2,7 @@ package de.mecrytv.nexusCore.inventorys;
 
 import com.destroystokyo.paper.profile.PlayerProfile;
 import com.google.gson.JsonObject;
-import de.mecrytv.DatabaseAPI;
-import de.mecrytv.languageapi.profile.ILanguageProfile;
+import de.mecrytv.databaseapi.DatabaseAPI;
 import de.mecrytv.nexusCore.NexusCore;
 import de.mecrytv.nexusCore.models.ReportModel;
 import de.mecrytv.nexusCore.utils.TranslationUtils;

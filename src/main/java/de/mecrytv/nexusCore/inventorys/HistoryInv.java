@@ -1,11 +1,13 @@
 package de.mecrytv.nexusCore.inventorys;
 
 import com.destroystokyo.paper.profile.PlayerProfile;
-import de.mecrytv.DatabaseAPI;
+import de.mecrytv.databaseapi.DatabaseAPI;
 import de.mecrytv.nexusCore.NexusCore;
 import de.mecrytv.nexusCore.enums.FilterType;
-import de.mecrytv.nexusCore.models.punish.*;
 import de.mecrytv.nexusCore.utils.*;
+import de.mecrytv.nexusapi.models.BanModel;
+import de.mecrytv.nexusapi.models.MuteModel;
+import de.mecrytv.nexusapi.models.WarnModel;
 import dev.triumphteam.gui.builder.item.ItemBuilder;
 import dev.triumphteam.gui.components.ScrollType;
 import dev.triumphteam.gui.guis.*;

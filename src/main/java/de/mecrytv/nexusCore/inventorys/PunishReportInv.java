@@ -1,11 +1,7 @@
 package de.mecrytv.nexusCore.inventorys;
 
-import de.mecrytv.DatabaseAPI;
 import de.mecrytv.nexusCore.NexusCore;
-import de.mecrytv.nexusCore.commands.ReportCommand;
-import de.mecrytv.nexusCore.models.punish.PunishmentHistoryModel;
 import de.mecrytv.nexusCore.utils.GeneralUtils;
-import de.mecrytv.nexusCore.utils.TimeUtils;
 import de.mecrytv.nexusCore.utils.TranslationUtils;
 import dev.triumphteam.gui.builder.item.ItemBuilder;
 import dev.triumphteam.gui.guis.Gui;
@@ -86,7 +82,12 @@ public class PunishReportInv {
                     "{target}", target.getName(),
                     "{reason}", MiniMessage.miniMessage().serialize(reasonName));
 
-            GeneralUtils.sendStaffNotification();
+            GeneralUtils.sendStaffNotification("gui.punishReport.staff_notify",
+                    "{staff}", clicker.getName(),
+                    "{target}", target.getName(),
+                    "{reason}", MiniMessage.miniMessage().serialize(reasonName)
+            );
+
             gui.close(clicker);
         });
     }

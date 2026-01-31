@@ -1,7 +1,7 @@
 package de.mecrytv.nexusCore.models;
 
 import com.google.gson.JsonObject;
-import de.mecrytv.model.ICacheModel;
+import de.mecrytv.databaseapi.model.ICacheModel;
 
 public class SkinCacheModel implements ICacheModel {
 

@@ -1,7 +1,6 @@
 package de.mecrytv.nexusCore.inventorys;
 
-import de.mecrytv.DatabaseAPI;
-import de.mecrytv.languageapi.profile.ILanguageProfile;
+import de.mecrytv.databaseapi.DatabaseAPI;
 import de.mecrytv.nexusCore.NexusCore;
 import de.mecrytv.nexusCore.commands.ReportCommand;
 import de.mecrytv.nexusCore.enums.ProofType;
@@ -105,8 +104,14 @@ public class ReportInv {
                     "{target}", target.getName(),
                     "{reason}", MiniMessage.miniMessage().serialize(reasonName));
 
+            GeneralUtils.sendStaffNotification("gui.report.staff_notify",
+                    "{player}", clicker.getName(),
+                    "{target}", target.getName(),
+                    "{reason}", MiniMessage.miniMessage().serialize(reasonName),
+                    "{id}", reportID
+            );
+
             ReportCommand.setCooldown(clicker.getUniqueId(), target.getUniqueId());
-            GeneralUtils.sendStaffNotification();
             gui.close(clicker);
         });
     }

@@ -1,10 +1,9 @@
 package de.mecrytv.nexusCore.listeners;
 
-import de.mecrytv.DatabaseAPI;
+import de.mecrytv.databaseapi.DatabaseAPI;
 import de.mecrytv.nexusCore.NexusCore;
-import de.mecrytv.nexusCore.models.TeleportModel;
 import de.mecrytv.nexusCore.utils.TranslationUtils;
-import net.kyori.adventure.text.Component;
+import de.mecrytv.nexusapi.models.TeleportModel;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

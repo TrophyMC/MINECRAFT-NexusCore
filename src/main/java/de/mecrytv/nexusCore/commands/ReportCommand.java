@@ -1,10 +1,11 @@
 package de.mecrytv.nexusCore.commands;
 
-import de.mecrytv.DatabaseAPI;
+import de.mecrytv.databaseapi.DatabaseAPI;
 import de.mecrytv.nexusCore.NexusCore;
 import de.mecrytv.nexusCore.inventorys.ReportInv;
-import de.mecrytv.nexusCore.inventorys.ReportsInv;
 import de.mecrytv.nexusCore.utils.TranslationUtils;
+import de.mecrytv.nexusapi.NexusAPI;
+import de.mecrytv.nexusapi.utils.TaskBatcher;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -75,32 +76,15 @@ public class ReportCommand implements CommandExecutor {
                 return;
             }
 
-            String cooldownKey = player.getUniqueId() + ":" + target.getUniqueId();
-            if (cooldowns.containsKey(cooldownKey)) {
-                long lastReport = cooldowns.get(cooldownKey);
-                long diff = System.currentTimeMillis() - lastReport;
-                long cooldownMillis = TimeUnit.MINUTES.toMillis(2);
-
-                if (diff < cooldownMillis) {
-                    long millisLeft = cooldownMillis - diff;
-                    long totalSeconds = millisLeft / 1000;
-
-                    if (totalSeconds >= 60) {
-                        long minutes = totalSeconds / 60;
-                        long seconds = totalSeconds % 60;
-
-                        TranslationUtils.sendTranslation(player, "commands.report.cooldown_minutes",
-                                "{minutes}", String.valueOf(minutes),
-                                "{seconds}", String.valueOf(seconds));
-                    } else {
-                        TranslationUtils.sendTranslation(player, "commands.report.cooldown_seconds",
-                                "{seconds}", String.valueOf(totalSeconds));
-                    }
+            TaskBatcher.acceptAsync(NexusAPI.getInstance().getCooldownManager().getRemainingTime(player.getUniqueId(), "report"), remaining -> {
+                if (remaining > 0) {
+                    long seconds = TimeUnit.MILLISECONDS.toSeconds(remaining);
+                    TranslationUtils.sendTranslation(player, "commands.report.cooldown_seconds", "{seconds}", String.valueOf(seconds));
                     return;
                 }
-            }
 
-            new ReportInv().open(player, target);
+                new ReportInv().open(player, target);
+            });
         });
 
         return true;
