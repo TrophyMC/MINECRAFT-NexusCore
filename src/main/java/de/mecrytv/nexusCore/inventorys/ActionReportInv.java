@@ -125,7 +125,7 @@ public class ActionReportInv {
                 meta.displayName(TranslationUtils.getGUITranslation(player, "gui.actionReport.history"));
             });
             GuiItem historyGuiItem = ItemBuilder.from(historyItem).asGuiItem(event -> {
-                // TODO: Open History GUI
+                new HistoryInv().open(player, targetProfile);
             });
 
             ItemStack punishItem = new ItemStack(Material.ANVIL);
