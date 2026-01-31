@@ -72,17 +72,17 @@ public class PunishManager {
                     DatabaseAPI.set("warn", new WarnModel(reportID, targetUUID, plainReason, staffUUID, today));
 
             case TEMP_MUTE ->
-                    DatabaseAPI.set("mute", new MuteModel(targetUUID, plainReason, staffUUID, today, today + step.duration()));
+                    DatabaseAPI.set("mute", new MuteModel(reportID, targetUUID, plainReason, staffUUID, today, today + step.duration()));
 
             case PERMA_MUTE ->
-                    DatabaseAPI.set("mute", new MuteModel(targetUUID, plainReason, staffUUID, today));
+                    DatabaseAPI.set("mute", new MuteModel(reportID, targetUUID, plainReason, staffUUID, today));
 
             case TEMP_BAN ->
-                    DatabaseAPI.set("ban", new BanModel(targetUUID, plainReason, staffUUID, PunishTypes.TEMP_BAN, today, today + step.duration()));
+                    DatabaseAPI.set("ban", new BanModel(reportID, targetUUID, plainReason, staffUUID, PunishTypes.TEMP_BAN, today, today + step.duration()));
 
             case PERMA_BAN -> {
                 String targetIp = target.getAddress() != null ? target.getAddress().getAddress().getHostAddress() : "unknown";
-                DatabaseAPI.set("ban", new BanModel(targetUUID, plainReason, staffUUID, PunishTypes.PERMA_BAN, today, targetIp));
+                DatabaseAPI.set("ban", new BanModel(reportID, targetUUID, plainReason, staffUUID, PunishTypes.PERMA_BAN, today, targetIp));
             }
         }
         changeReportState(reportID);
