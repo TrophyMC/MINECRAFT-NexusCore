@@ -10,6 +10,7 @@ public class BanModel implements ICacheModel {
     private String playerUUID;
     private String reason;
     private String staffUUID;
+    private String staffName;
     private PunishTypes punishTypes;
     private long banTimestamp;
     private long banExpires;
@@ -17,22 +18,24 @@ public class BanModel implements ICacheModel {
 
     public BanModel() { }
 
-    public BanModel(String banID, String playerUUID, String reason, String staffUUID, PunishTypes punishTypes, long banTimestamp, long banExpires) {
+    public BanModel(String banID, String playerUUID, String reason, String staffUUID, String staffName, PunishTypes punishTypes, long banTimestamp, long banExpires) {
         this.banID = banID;
         this.playerUUID = playerUUID;
         this.reason = reason;
         this.staffUUID = staffUUID;
+        this.staffName = staffName;
         this.punishTypes = punishTypes;
         this.banTimestamp = banTimestamp;
         this.banExpires = banExpires;
         this.ipAddress = null;
     }
 
-    public BanModel(String banID, String playerUUID, String reason, String staffUUID, PunishTypes punishTypes, long banTimestamp, String ipAddress) {
+    public BanModel(String banID, String playerUUID, String reason, String staffUUID, String staffName, PunishTypes punishTypes, long banTimestamp, String ipAddress) {
         this.banID = banID;
         this.playerUUID = playerUUID;
         this.reason = reason;
         this.staffUUID = staffUUID;
+        this.staffName = staffName;
         this.punishTypes = punishTypes;
         this.banTimestamp = banTimestamp;
         this.ipAddress = ipAddress;
@@ -51,6 +54,7 @@ public class BanModel implements ICacheModel {
         json.addProperty("playerUUID", playerUUID);
         json.addProperty("reason", reason);
         json.addProperty("staffUUID", staffUUID);
+        json.addProperty("staffName", staffName);
         json.addProperty("banType", punishTypes.name());
         json.addProperty("banTimestamp", banTimestamp);
         json.addProperty("banExpires", banExpires);
@@ -64,6 +68,7 @@ public class BanModel implements ICacheModel {
         this.playerUUID = data.get("playerUUID").getAsString();
         this.reason = data.get("reason").getAsString();
         this.staffUUID = data.get("staffUUID").getAsString();
+        this.staffName = data.get("staffName").getAsString();
         this.punishTypes = PunishTypes.valueOf(data.get("punishTypes").getAsString());
         this.banTimestamp = data.get("banTimestamp").getAsLong();
         this.banExpires = data.get("banExpires").getAsLong();
@@ -74,6 +79,12 @@ public class BanModel implements ICacheModel {
         }
     }
 
+    public String getStaffName() {
+        return staffName;
+    }
+    public void setStaffName(String staffName) {
+        this.staffName = staffName;
+    }
     public String getBanID() {
         return banID;
     }

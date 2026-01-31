@@ -9,15 +9,17 @@ public class WarnModel implements ICacheModel {
     private String playerUUID;
     private String reason;
     private String staffUUID;
+    private String staffName;
     private long warnTimestamp;
 
     public WarnModel() { }
 
-    public WarnModel(String warnId, String playerUUID, String reason, String staffUUID, long warnTimestamp) {
+    public WarnModel(String warnId, String playerUUID, String reason, String staffUUID, String staffName, long warnTimestamp) {
         this.warnId = warnId;
         this.playerUUID = playerUUID;
         this.reason = reason;
         this.staffUUID = staffUUID;
+        this.staffName = staffName;
         this.warnTimestamp = warnTimestamp;
     }
 
@@ -33,6 +35,7 @@ public class WarnModel implements ICacheModel {
         json.addProperty("playerUUID", playerUUID);
         json.addProperty("reason", reason);
         json.addProperty("staffUUID", staffUUID);
+        json.addProperty("staffName", staffName);
         json.addProperty("warnTimestamp", warnTimestamp);
         return json;
     }
@@ -43,6 +46,7 @@ public class WarnModel implements ICacheModel {
         this.playerUUID = data.get("playerUUID").getAsString();
         this.reason = data.get("reason").getAsString();
         this.staffUUID = data.get("staffUUID").getAsString();
+        this.staffName = data.get("staffName").getAsString();
         this.warnTimestamp = data.get("warnTimestamp").getAsLong();
     }
 
@@ -75,5 +79,11 @@ public class WarnModel implements ICacheModel {
     }
     public void setWarnTimestamp(long warnTimestamp) {
         this.warnTimestamp = warnTimestamp;
+    }
+    public String getStaffName() {
+        return staffName;
+    }
+    public void setStaffName(String staffName) {
+        this.staffName = staffName;
     }
 }

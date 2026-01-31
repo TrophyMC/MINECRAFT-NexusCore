@@ -9,25 +9,28 @@ public class MuteModel implements ICacheModel {
     private String playerUUID;
     private String reason;
     private String staffUUID;
+    private String staffName;
     private long muteTimestamp;
     private long muteExpires;
 
     public MuteModel() { }
 
-    public MuteModel(String muteID, String playerUUID, String reason, String staffUUID, long muteTimestamp, long muteExpires) {
+    public MuteModel(String muteID, String playerUUID, String reason, String staffUUID, String staffName, long muteTimestamp, long muteExpires) {
         this.muteID = muteID;
         this.playerUUID = playerUUID;
         this.reason = reason;
         this.staffUUID = staffUUID;
+        this.staffName = staffName;
         this.muteTimestamp = muteTimestamp;
         this.muteExpires = muteExpires;
     }
 
-    public MuteModel(String muteID, String playerUUID, String reason, String staffUUID, long muteTimestamp) {
+    public MuteModel(String muteID, String playerUUID, String reason, String staffUUID, String staffName, long muteTimestamp) {
         this.muteID = muteID;
         this.playerUUID = playerUUID;
         this.reason = reason;
         this.staffUUID = staffUUID;
+        this.staffName = staffName;
         this.muteTimestamp = muteTimestamp;
         this.muteExpires = -1;
     }
@@ -44,6 +47,7 @@ public class MuteModel implements ICacheModel {
         json.addProperty("playerUUID", playerUUID);
         json.addProperty("reason", reason);
         json.addProperty("staffUUID", staffUUID);
+        json.addProperty("staffName", staffName);
         json.addProperty("muteTimestamp", muteTimestamp);
         json.addProperty("muteExpires", muteExpires);
         return json;
@@ -55,6 +59,7 @@ public class MuteModel implements ICacheModel {
         this.playerUUID = data.get("playerUUID").getAsString();
         this.reason = data.get("reason").getAsString();
         this.staffUUID = data.get("staffUUID").getAsString();
+        this.staffName = data.get("staffName").getAsString();
         this.muteTimestamp = data.get("muteTimestamp").getAsLong();
         this.muteExpires = data.get("muteExpires").getAsLong();
     }
@@ -94,5 +99,11 @@ public class MuteModel implements ICacheModel {
     }
     public void setMuteExpires(long muteExpires) {
         this.muteExpires = muteExpires;
+    }
+    public String getStaffName() {
+        return staffName;
+    }
+    public void setStaffName(String staffName) {
+        this.staffName = staffName;
     }
 }
