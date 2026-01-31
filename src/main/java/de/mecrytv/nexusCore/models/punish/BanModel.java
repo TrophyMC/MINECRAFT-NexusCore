@@ -6,6 +6,7 @@ import de.mecrytv.nexusCore.enums.PunishTypes;
 
 public class BanModel implements ICacheModel {
 
+    private String banID;
     private String playerUUID;
     private String reason;
     private String staffUUID;
@@ -16,7 +17,8 @@ public class BanModel implements ICacheModel {
 
     public BanModel() { }
 
-    public BanModel(String playerUUID, String reason, String staffUUID, PunishTypes punishTypes, long banTimestamp, long banExpires) {
+    public BanModel(String banID, String playerUUID, String reason, String staffUUID, PunishTypes punishTypes, long banTimestamp, long banExpires) {
+        this.banID = banID;
         this.playerUUID = playerUUID;
         this.reason = reason;
         this.staffUUID = staffUUID;
@@ -26,7 +28,8 @@ public class BanModel implements ICacheModel {
         this.ipAddress = null;
     }
 
-    public BanModel(String playerUUID, String reason, String staffUUID, PunishTypes punishTypes, long banTimestamp, String ipAddress) {
+    public BanModel(String banID, String playerUUID, String reason, String staffUUID, PunishTypes punishTypes, long banTimestamp, String ipAddress) {
+        this.banID = banID;
         this.playerUUID = playerUUID;
         this.reason = reason;
         this.staffUUID = staffUUID;
@@ -38,12 +41,13 @@ public class BanModel implements ICacheModel {
 
     @Override
     public String getIdentifier() {
-        return playerUUID;
+        return banID;
     }
 
     @Override
     public JsonObject serialize() {
         JsonObject json = new JsonObject();
+        json.addProperty("banID", banID);
         json.addProperty("playerUUID", playerUUID);
         json.addProperty("reason", reason);
         json.addProperty("staffUUID", staffUUID);
@@ -56,6 +60,7 @@ public class BanModel implements ICacheModel {
 
     @Override
     public void deserialize(JsonObject data) {
+        this.banID = data.get("banID").getAsString();
         this.playerUUID = data.get("playerUUID").getAsString();
         this.reason = data.get("reason").getAsString();
         this.staffUUID = data.get("staffUUID").getAsString();
@@ -69,6 +74,18 @@ public class BanModel implements ICacheModel {
         }
     }
 
+    public String getBanID() {
+        return banID;
+    }
+    public void setBanID(String banID) {
+        this.banID = banID;
+    }
+    public PunishTypes getPunishTypes() {
+        return punishTypes;
+    }
+    public void setPunishTypes(PunishTypes punishTypes) {
+        this.punishTypes = punishTypes;
+    }
     public String getPlayerUUID() {
         return playerUUID;
     }
@@ -86,12 +103,6 @@ public class BanModel implements ICacheModel {
     }
     public void setStaffUUID(String staffUUID) {
         this.staffUUID = staffUUID;
-    }
-    public PunishTypes getBanType() {
-        return punishTypes;
-    }
-    public void setBanType(PunishTypes punishTypes) {
-        this.punishTypes = punishTypes;
     }
     public long getBanTimestamp() {
         return banTimestamp;
