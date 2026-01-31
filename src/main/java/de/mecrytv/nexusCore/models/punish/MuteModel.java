@@ -5,6 +5,7 @@ import de.mecrytv.model.ICacheModel;
 
 public class MuteModel implements ICacheModel {
 
+    private String muteID;
     private String playerUUID;
     private String reason;
     private String staffUUID;
@@ -13,7 +14,8 @@ public class MuteModel implements ICacheModel {
 
     public MuteModel() { }
 
-    public MuteModel(String playerUUID, String reason, String staffUUID, long muteTimestamp, long muteExpires) {
+    public MuteModel(String muteID, String playerUUID, String reason, String staffUUID, long muteTimestamp, long muteExpires) {
+        this.muteID = muteID;
         this.playerUUID = playerUUID;
         this.reason = reason;
         this.staffUUID = staffUUID;
@@ -21,7 +23,8 @@ public class MuteModel implements ICacheModel {
         this.muteExpires = muteExpires;
     }
 
-    public MuteModel(String playerUUID, String reason, String staffUUID, long muteTimestamp) {
+    public MuteModel(String muteID, String playerUUID, String reason, String staffUUID, long muteTimestamp) {
+        this.muteID = muteID;
         this.playerUUID = playerUUID;
         this.reason = reason;
         this.staffUUID = staffUUID;
@@ -31,12 +34,13 @@ public class MuteModel implements ICacheModel {
 
     @Override
     public String getIdentifier() {
-        return playerUUID;
+        return muteID;
     }
 
     @Override
     public JsonObject serialize() {
         JsonObject json = new JsonObject();
+        json.addProperty("muteID", muteID);
         json.addProperty("playerUUID", playerUUID);
         json.addProperty("reason", reason);
         json.addProperty("staffUUID", staffUUID);
@@ -47,6 +51,7 @@ public class MuteModel implements ICacheModel {
 
     @Override
     public void deserialize(JsonObject data) {
+        this.muteID = data.get("muteID").getAsString();
         this.playerUUID = data.get("playerUUID").getAsString();
         this.reason = data.get("reason").getAsString();
         this.staffUUID = data.get("staffUUID").getAsString();
@@ -54,6 +59,12 @@ public class MuteModel implements ICacheModel {
         this.muteExpires = data.get("muteExpires").getAsLong();
     }
 
+    public String getMuteID() {
+        return muteID;
+    }
+    public void setMuteID(String muteID) {
+        this.muteID = muteID;
+    }
     public String getPlayerUUID() {
         return playerUUID;
     }
