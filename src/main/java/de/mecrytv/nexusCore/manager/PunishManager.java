@@ -64,25 +64,26 @@ public class PunishManager {
         long today = System.currentTimeMillis();
         String targetUUID = target.getUniqueId().toString();
         String staffUUID = staff.getUniqueId().toString();
+        String staffName = staff.getName();
 
         String plainReason = PunishConfig.getPlainReason(staff, reasonKey);
 
         switch (step.type()) {
             case WARN ->
-                    DatabaseAPI.set("warn", new WarnModel(reportID, targetUUID, plainReason, staffUUID, today));
+                    DatabaseAPI.set("warn", new WarnModel(reportID, targetUUID, plainReason, staffUUID, staffName, today));
 
             case TEMP_MUTE ->
-                    DatabaseAPI.set("mute", new MuteModel(reportID, targetUUID, plainReason, staffUUID, today, today + step.duration()));
+                    DatabaseAPI.set("mute", new MuteModel(reportID, targetUUID, plainReason, staffUUID, staffName, today, today + step.duration()));
 
             case PERMA_MUTE ->
-                    DatabaseAPI.set("mute", new MuteModel(reportID, targetUUID, plainReason, staffUUID, today));
+                    DatabaseAPI.set("mute", new MuteModel(reportID, targetUUID, plainReason, staffUUID, staffName, today));
 
             case TEMP_BAN ->
-                    DatabaseAPI.set("ban", new BanModel(reportID, targetUUID, plainReason, staffUUID, PunishTypes.TEMP_BAN, today, today + step.duration()));
+                    DatabaseAPI.set("ban", new BanModel(reportID, targetUUID, plainReason, staffUUID, staffName, PunishTypes.TEMP_BAN, today, today + step.duration()));
 
             case PERMA_BAN -> {
                 String targetIp = target.getAddress() != null ? target.getAddress().getAddress().getHostAddress() : "unknown";
-                DatabaseAPI.set("ban", new BanModel(reportID, targetUUID, plainReason, staffUUID, PunishTypes.PERMA_BAN, today, targetIp));
+                DatabaseAPI.set("ban", new BanModel(reportID, targetUUID, plainReason, staffUUID, staffName, PunishTypes.PERMA_BAN, today, targetIp));
             }
         }
         changeReportState(reportID);
