@@ -46,6 +46,24 @@ public final class TimeUtils {
         return sb.toString().trim();
     }
 
+    public static String formatDuration(long durationMillis) {
+        if (durationMillis == -1) return "Permanent";
+        if (durationMillis <= 0) return "0s";
+
+        long days = TimeUnit.MILLISECONDS.toDays(durationMillis);
+        long hours = TimeUnit.MILLISECONDS.toHours(durationMillis) % 24;
+        long minutes = TimeUnit.MILLISECONDS.toMinutes(durationMillis) % 60;
+        long seconds = TimeUnit.MILLISECONDS.toSeconds(durationMillis) % 60;
+
+        StringBuilder sb = new StringBuilder();
+        if (days > 0) sb.append(days).append(" Tage ");
+        if (hours > 0) sb.append(hours).append(" Stunden ");
+        if (minutes > 0) sb.append(minutes).append(" Minuten ");
+        if (seconds > 0 && days == 0) sb.append(seconds).append(" Sekunden");
+
+        return sb.toString().trim();
+    }
+
     public static long getDurationMillis(long amount, TimeUnit unit) {
         return unit.toMillis(amount);
     }
