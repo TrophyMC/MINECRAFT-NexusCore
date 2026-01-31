@@ -39,7 +39,7 @@ public class ReportModel implements ICacheModel {
     @Override
     public JsonObject serialize() {
         JsonObject json = new JsonObject();
-        json.addProperty("reportID", reportID);
+        json.addProperty("id", reportID);
         json.addProperty("targetUUID", targetUUID);
         json.addProperty("targetName", targetName);
         json.addProperty("reporterUUID", reporterUUID);
@@ -54,7 +54,7 @@ public class ReportModel implements ICacheModel {
 
     @Override
     public void deserialize(JsonObject data) {
-        this.reportID = data.get("reportID").getAsString();
+        this.reportID = data.has("id") ? data.get("id").getAsString() : data.get("reportID").getAsString();
         this.targetUUID = data.get("targetUUID").getAsString();
         this.targetName = data.get("targetName").getAsString();
         this.reporterUUID = data.get("reporterUUID").getAsString();

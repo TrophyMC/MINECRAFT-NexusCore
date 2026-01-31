@@ -5,6 +5,7 @@ import de.mecrytv.DatabaseAPI;
 import de.mecrytv.nexusCore.NexusCore;
 import de.mecrytv.nexusCore.config.PunishConfig;
 import de.mecrytv.nexusCore.enums.PunishTypes;
+import de.mecrytv.nexusCore.models.ReportModel;
 import de.mecrytv.nexusCore.models.punish.BanModel;
 import de.mecrytv.nexusCore.models.punish.MuteModel;
 import de.mecrytv.nexusCore.models.punish.PunishmentHistoryModel;
@@ -94,13 +95,20 @@ public class PunishManager {
             return;
         }
 
-        JsonObject updates = new com.google.gson.JsonObject();
-        updates.addProperty("state", "CLOSED");
+        DatabaseAPI.<ReportModel>get("reports", reportID).thenAccept(report -> {
+            if (report == null) {
+                plugin.getLogger().warning("Report " + reportID + " existiert nicht in der DB. Überspringe Status-Update.");
+                return;
+            }
 
-        DatabaseAPI.updateAsync("reports", reportID, updates).thenRun(() -> {
-            plugin.getLogger().info("Report " + reportID + " wurde erfolgreich geschlossen.");
+            JsonObject updates = new JsonObject();
+            updates.addProperty("state", "CLOSED");
+
+            DatabaseAPI.updateAsync("reports", reportID, updates).thenRun(() -> {
+                plugin.getLogger().info("Report " + reportID + " wurde erfolgreich geschlossen.");
+            });
         }).exceptionally(ex -> {
-            plugin.getLogger().severe("Fehler beim Schließen von Report " + reportID + ": " + ex.getMessage());
+            plugin.getLogger().severe("Fehler beim Zugriff auf Report " + reportID + ": " + ex.getMessage());
             return null;
         });
     }

@@ -21,7 +21,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 
 public class PunishReportInv {
 
-    public void open(Player player, Player target) {
+    public void open(Player player, Player target, String reportID) {
         Bukkit.getScheduler().runTask(NexusCore.getInstance(), () -> {
             Component title = TranslationUtils.getGUITranslation(player, "gui.punishReport.title", "{target}", target.getName());
 
@@ -39,23 +39,23 @@ public class PunishReportInv {
             });
             gui.setItem(1, 5, ItemBuilder.from(head).asGuiItem());
 
-            gui.setItem(3, 4, createPunishReportItem(Material.IRON_SWORD, "client_mod", player, target, gui));
-            gui.setItem(3, 6, createPunishReportItem(Material.COMMAND_BLOCK, "bug_abuse", player, target, gui));
-            gui.setItem(4, 2, createPunishReportItem(Material.GOLDEN_APPLE, "teaming", player, target, gui));
-            gui.setItem(4, 3, createPunishReportItem(Material.LAVA_BUCKET, "trolling", player, target, gui));
-            gui.setItem(4, 4, createPunishReportItem(Material.CLOCK, "afk_farming", player, target, gui));
-            gui.setItem(4, 5, createPunishReportItem(Material.DIAMOND_CHESTPLATE, "stats_pushing", player, target, gui));
-            gui.setItem(4, 6, createPunishReportItem(Material.BARRIER, "ban_evasion", player, target, gui));
-            gui.setItem(4, 7, createPunishReportItem(Material.PLAYER_HEAD, "skin", player, target, gui));
-            gui.setItem(4, 8, createPunishReportItem(Material.NAME_TAG, "name", player, target, gui));
+            gui.setItem(3, 4, createPunishReportItem(Material.IRON_SWORD, "client_mod", player, target, gui, reportID));
+            gui.setItem(3, 6, createPunishReportItem(Material.COMMAND_BLOCK, "bug_abuse", player, target, gui, reportID));
+            gui.setItem(4, 2, createPunishReportItem(Material.GOLDEN_APPLE, "teaming", player, target, gui, reportID));
+            gui.setItem(4, 3, createPunishReportItem(Material.LAVA_BUCKET, "trolling", player, target, gui, reportID));
+            gui.setItem(4, 4, createPunishReportItem(Material.CLOCK, "afk_farming", player, target, gui, reportID));
+            gui.setItem(4, 5, createPunishReportItem(Material.DIAMOND_CHESTPLATE, "stats_pushing", player, target, gui, reportID));
+            gui.setItem(4, 6, createPunishReportItem(Material.BARRIER, "ban_evasion", player, target, gui, reportID));
+            gui.setItem(4, 7, createPunishReportItem(Material.PLAYER_HEAD, "skin", player, target, gui, reportID));
+            gui.setItem(4, 8, createPunishReportItem(Material.NAME_TAG, "name", player, target, gui, reportID));
 
-            gui.setItem(5, 2, createPunishReportItem(Material.PAPER, "provocation", player, target, gui));
-            gui.setItem(5, 3, createPunishReportItem(Material.PAPER, "insult", player, target, gui));
-            gui.setItem(5, 4, createPunishReportItem(Material.PAPER, "chat_spam", player, target, gui));
-            gui.setItem(5, 5, createPunishReportItem(Material.PAPER, "server_insult", player, target, gui));
-            gui.setItem(5, 6, createPunishReportItem(Material.PAPER, "threat", player, target, gui));
-            gui.setItem(5, 7, createPunishReportItem(Material.PAPER, "racism", player, target, gui));
-            gui.setItem(5, 8, createPunishReportItem(Material.PAPER, "death_wish", player, target, gui));
+            gui.setItem(5, 2, createPunishReportItem(Material.PAPER, "provocation", player, target, gui, reportID));
+            gui.setItem(5, 3, createPunishReportItem(Material.PAPER, "insult", player, target, gui, reportID));
+            gui.setItem(5, 4, createPunishReportItem(Material.PAPER, "chat_spam", player, target, gui, reportID));
+            gui.setItem(5, 5, createPunishReportItem(Material.PAPER, "server_insult", player, target, gui, reportID));
+            gui.setItem(5, 6, createPunishReportItem(Material.PAPER, "threat", player, target, gui, reportID));
+            gui.setItem(5, 7, createPunishReportItem(Material.PAPER, "racism", player, target, gui, reportID));
+            gui.setItem(5, 8, createPunishReportItem(Material.PAPER, "death_wish", player, target, gui, reportID));
 
             ItemStack pane = new ItemStack(Material.BLACK_STAINED_GLASS_PANE);
             pane.editMeta(meta -> meta.displayName(Component.empty()));
@@ -65,7 +65,7 @@ public class PunishReportInv {
         });
     }
 
-    private GuiItem createPunishReportItem(Material material, String reasonKey, Player player, Player target, Gui gui){
+    private GuiItem createPunishReportItem(Material material, String reasonKey, Player player, Player target, Gui gui, String reportID){
         String baseKey = "gui.report.reasons." + reasonKey;
 
         Component reasonName = TranslationUtils.getGUITranslation(player, baseKey + ".name");
@@ -79,7 +79,6 @@ public class PunishReportInv {
 
         return ItemBuilder.from(item).asGuiItem(event -> {
             Player clicker = (Player) event.getWhoClicked();
-            String reportID = GeneralUtils.generateUniqueReportID();
 
             NexusCore.getInstance().getPunishManager().executePunishment(reportID, reasonKey, target, clicker);
 

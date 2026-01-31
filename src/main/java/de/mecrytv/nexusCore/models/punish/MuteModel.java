@@ -5,46 +5,44 @@ import de.mecrytv.model.ICacheModel;
 
 public class MuteModel implements ICacheModel {
 
-    private String muteID;
-    private String playerUUID;
+    private String id; // targetUUID:timestamp
+    private String reportID;
+    private String targetUUID;
     private String reason;
     private String staffUUID;
     private String staffName;
     private long muteTimestamp;
     private long muteExpires;
 
-    public MuteModel() { }
-
-    public MuteModel(String muteID, String playerUUID, String reason, String staffUUID, String staffName, long muteTimestamp, long muteExpires) {
-        this.muteID = muteID;
-        this.playerUUID = playerUUID;
-        this.reason = reason;
-        this.staffUUID = staffUUID;
-        this.staffName = staffName;
-        this.muteTimestamp = muteTimestamp;
-        this.muteExpires = muteExpires;
+    public MuteModel() {
     }
 
-    public MuteModel(String muteID, String playerUUID, String reason, String staffUUID, String staffName, long muteTimestamp) {
-        this.muteID = muteID;
-        this.playerUUID = playerUUID;
+    public MuteModel(String reportID, String targetUUID, String reason, String staffUUID, String staffName, long timestamp, long expiry) {
+        this.id = targetUUID + ":" + timestamp;
+        this.reportID = reportID;
+        this.targetUUID = targetUUID;
         this.reason = reason;
         this.staffUUID = staffUUID;
         this.staffName = staffName;
-        this.muteTimestamp = muteTimestamp;
-        this.muteExpires = -1;
+        this.muteTimestamp = timestamp;
+        this.muteExpires = expiry;
+    }
+
+    public MuteModel(String reportID, String targetUUID, String reason, String staffUUID, String staffName, long timestamp) {
+        this(reportID, targetUUID, reason, staffUUID, staffName, timestamp, -1L);
     }
 
     @Override
     public String getIdentifier() {
-        return muteID;
+        return id;
     }
 
     @Override
     public JsonObject serialize() {
         JsonObject json = new JsonObject();
-        json.addProperty("muteID", muteID);
-        json.addProperty("playerUUID", playerUUID);
+        json.addProperty("id", id);
+        json.addProperty("reportID", reportID);
+        json.addProperty("targetUUID", targetUUID);
         json.addProperty("reason", reason);
         json.addProperty("staffUUID", staffUUID);
         json.addProperty("staffName", staffName);
@@ -55,8 +53,9 @@ public class MuteModel implements ICacheModel {
 
     @Override
     public void deserialize(JsonObject data) {
-        this.muteID = data.get("muteID").getAsString();
-        this.playerUUID = data.get("playerUUID").getAsString();
+        this.id = data.has("id") ? data.get("id").getAsString() : "";
+        this.reportID = data.has("reportID") ? data.get("reportID").getAsString() : "none";
+        this.targetUUID = data.has("targetUUID") ? data.get("targetUUID").getAsString() : "";
         this.reason = data.get("reason").getAsString();
         this.staffUUID = data.get("staffUUID").getAsString();
         this.staffName = data.get("staffName").getAsString();
@@ -64,46 +63,67 @@ public class MuteModel implements ICacheModel {
         this.muteExpires = data.get("muteExpires").getAsLong();
     }
 
-    public String getMuteID() {
-        return muteID;
+    public String getId() {
+        return id;
     }
-    public void setMuteID(String muteID) {
-        this.muteID = muteID;
+
+    public void setId(String id) {
+        this.id = id;
     }
-    public String getPlayerUUID() {
-        return playerUUID;
+
+    public String getReportID() {
+        return reportID;
     }
-    public void setPlayerUUID(String playerUUID) {
-        this.playerUUID = playerUUID;
+
+    public void setReportID(String reportID) {
+        this.reportID = reportID;
     }
+
+    public String getTargetUUID() {
+        return targetUUID;
+    }
+
+    public void setTargetUUID(String targetUUID) {
+        this.targetUUID = targetUUID;
+    }
+
     public String getReason() {
         return reason;
     }
+
     public void setReason(String reason) {
         this.reason = reason;
     }
+
     public String getStaffUUID() {
         return staffUUID;
     }
+
     public void setStaffUUID(String staffUUID) {
         this.staffUUID = staffUUID;
     }
-    public long getMuteTimestamp() {
-        return muteTimestamp;
-    }
-    public void setMuteTimestamp(long muteTimestamp) {
-        this.muteTimestamp = muteTimestamp;
-    }
-    public long getMuteExpires() {
-        return muteExpires;
-    }
-    public void setMuteExpires(long muteExpires) {
-        this.muteExpires = muteExpires;
-    }
+
     public String getStaffName() {
         return staffName;
     }
+
     public void setStaffName(String staffName) {
         this.staffName = staffName;
+    }
+
+    public long getMuteTimestamp() {
+        return muteTimestamp;
+    }
+
+    public void setMuteTimestamp(long muteTimestamp) {
+        this.muteTimestamp = muteTimestamp;
+    }
+
+    public long getMuteExpires() {
+        return muteExpires;
+    }
+
+    public void setMuteExpires(long muteExpires) {
+        this.muteExpires = muteExpires;
     }
 }

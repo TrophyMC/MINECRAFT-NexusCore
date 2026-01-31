@@ -137,7 +137,7 @@ public class ActionReportInv {
                 Player clicker = (Player) event.getWhoClicked();
                 Player target = Bukkit.getPlayer(UUID.fromString(report.getTargetUUID()));
 
-                new PunishReportInv().open(clicker, target);
+                new PunishReportInv().open(clicker, target, report.getReportID());
             });
 
             DatabaseAPI.<ProofModel>get("proofs", report.getReportID()).thenAccept(proof -> {
